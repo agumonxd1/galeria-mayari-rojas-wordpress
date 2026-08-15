@@ -19,4 +19,6 @@ El perfil del termino `gmr_artist` incorpora campos para cronologia, premios, fo
 
 Se estructuraron textos y etapas ya presentes en la pagina heredada. Se asociaron las fotografias `5213` y `5214`, y el PDF `6494`, Obra Grafica - Patrimonio Elmar Rojas.
 
-La lista individual de premios no se publico porque el contenido heredado solo contiene una introduccion y presenta datos incompletos. El campo queda preparado para que la galeria incorpore informacion verificada. Tambien se evita mostrar un ano de nacimiento mientras persista la contradiccion entre las fuentes internas del sitio.
+Se publico una seleccion curada de siete reconocimientos contrastados con el archivo de la Fundacion Paiz, la cobertura historica del Premio Cristobal Colon y fichas biograficas especializadas. Se excluyeron fechas contradictorias del contenido heredado. El campo administrativo permite ampliar o corregir la lista cuando la galeria aporte documentos adicionales.
+
+Se evita mostrar un ano de nacimiento en la biografia principal mientras persista la contradiccion entre las fuentes internas del sitio.
