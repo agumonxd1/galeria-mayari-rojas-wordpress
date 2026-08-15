@@ -158,7 +158,7 @@ Valores de `gmr_price_visibility`:
 - `collectors`: Coleccionistas, gestores y administradores.
 - `public`: Todos los visitantes autorizados a ver la obra.
 
-Decision pendiente: moneda canonica del catalogo. Los datos actuales muestran precios con simbolo `$`; se debe confirmar si representan USD y si existira una unica moneda.
+Decision aprobada: la moneda canonica inicial sera USD.
 
 ### 4.8 Visibilidad y destacamiento
 
@@ -342,14 +342,15 @@ No se almacenaran datos de pago.
 9. Asignar visibilidad y estado comercial predeterminados.
 10. Comparar conteos, SKUs, imagenes y relaciones antes de retirar datos heredados.
 
-## 14. Decisiones pendientes de aprobacion
+## 14. Decisiones aprobadas
 
-- Moneda canonica: confirmar USD, GTQ u otra.
-- Si una obra puede tener mas de un artista en el MVP.
-- Comportamiento publico de obras vendidas.
-- Visibilidad predeterminada de procedencia y certificado.
-- Si todos los Coleccionistas tendran el mismo catalogo privado inicialmente.
-- Si se conservara RSVP de EventON o se reemplazara por un enlace/formulario simple.
+- La moneda canonica inicial sera USD.
+- Cada obra tendra un artista principal durante el MVP.
+- Las obras vendidas permaneceran visibles por defecto con el estado `Vendida`; el equipo podra ocultarlas individualmente.
+- La procedencia sera privada para Gestores y Administradores.
+- El estado del certificado sera visible para Coleccionistas, Gestores y Administradores.
+- Todos los Coleccionistas compartiran el mismo catalogo privado durante el MVP.
+- EventON se conservara temporalmente durante la migracion y se reemplazara despues de validar el nuevo modulo de Agenda.
 
 ## 15. Criterios de aceptacion
 
@@ -360,4 +361,3 @@ No se almacenaran datos de pago.
 - Una obra privada no aparece en ningun canal publico.
 - Elmar Rojas utiliza los mismos datos de catalogo sin duplicaciones.
 - La migracion puede comparar el total original de 131 productos con el resultado.
-

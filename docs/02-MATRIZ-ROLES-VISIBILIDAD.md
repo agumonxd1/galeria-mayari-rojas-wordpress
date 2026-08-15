@@ -91,7 +91,7 @@ Si no existe precio:
 |---|---|---|
 | Disponible | Catalogos permitidos | Consultar obra |
 | Reservada | Catalogos permitidos | Consultar disponibilidad |
-| Vendida | Decision editorial pendiente | Sin accion comercial o consultar similares |
+| Vendida | Visible por defecto, salvo ocultamiento editorial | Sin accion comercial o consultar similares |
 | No disponible | Perfil/archivo segun configuracion | Consultar similares |
 | En exposicion | Catalogos y exposicion | Informacion/visita |
 | Archivo historico | Archivo, no catalogo comercial | Ninguna o contexto editorial |
@@ -166,7 +166,7 @@ Estados propuestos:
 - Suspendida.
 - Expirada.
 
-Decision MVP: todos los Coleccionistas ven el mismo catalogo privado. Las selecciones individuales se reservan para una fase posterior.
+Decision aprobada para el MVP: todos los Coleccionistas ven el mismo catalogo privado. Las selecciones individuales se reservan para una fase posterior.
 
 ## 12. Capacidades propuestas
 
@@ -223,4 +223,3 @@ La prueba se ejecutara como visitante, Coleccionista, Gestor y Administrador.
 - Los documentos privados no son accesibles con solo conocer la URL.
 - El cache no mezcla respuestas publicas y privadas.
 - Crear o desactivar una cuenta no requiere intervencion tecnica.
-
