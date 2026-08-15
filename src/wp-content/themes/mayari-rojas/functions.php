@@ -31,6 +31,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_enqueue_style( 'gmr-artists', get_template_directory_uri() . '/assets/artists.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
 	}
 	if ( is_page('elmar-rojas') ) wp_enqueue_style( 'gmr-elmar-special', get_template_directory_uri() . '/assets/elmar-special.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_post_type_archive('gmr_event') || is_tax('gmr_event_type') || is_singular('gmr_event') || is_page('actividades') ) wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -110,6 +111,9 @@ function gmr_theme_event_date( int $post_id ): string {
 function gmr_theme_event_types( int $post_id ): string {
 	return gmr_theme_term_names( $post_id, 'gmr_event_type' );
 }
+function gmr_theme_event_is_upcoming(int $post_id):bool{$status=get_post_meta($post_id,'gmr_event_status',true);if(in_array($status,array('upcoming','ongoing'),true))return true;if(in_array($status,array('finished','cancelled'),true))return false;$end=get_post_meta($post_id,'gmr_event_end',true);$start=get_post_meta($post_id,'gmr_event_start',true);$timestamp=strtotime($end?:$start);return$timestamp&&$timestamp>=current_time('timestamp');}
+function gmr_theme_event_date_parts(int $post_id):array{$value=get_post_meta($post_id,'gmr_event_start',true);$timestamp=$value?strtotime($value):false;if(!$timestamp)return array('day'=>'','month'=>'','year'=>'','time'=>'');$all_day=(bool)get_post_meta($post_id,'gmr_event_all_day',true);return array('day'=>wp_date('d',$timestamp),'month'=>wp_date('M',$timestamp),'year'=>wp_date('Y',$timestamp),'time'=>$all_day?'':wp_date('H:i',$timestamp));}
+function gmr_theme_event_status_label(int $post_id):string{$status=get_post_meta($post_id,'gmr_event_status',true);$labels=array('upcoming'=>'Próximo','ongoing'=>'En curso','finished'=>'Finalizado','cancelled'=>'Cancelado');return$labels[$status]??(gmr_theme_event_is_upcoming($post_id)?'Próximo':'Archivo');}
 function gmr_theme_commercial_labels():array{return array('available'=>'Disponible','reserved'=>'Reservada','sold'=>'Vendida','not_available'=>'No disponible','on_exhibition'=>'En exposición','archive'=>'Archivo');}
 function gmr_theme_commercial_label(string $status):string{$labels=gmr_theme_commercial_labels();return$labels[$status]??ucfirst(str_replace('_',' ',$status));}
 function gmr_theme_edition_label(int $post_id):string{$number=trim((string)get_post_meta($post_id,'gmr_edition_number',true));$size=trim((string)get_post_meta($post_id,'gmr_edition_size',true));if($number&&$size)return$number.' de '.$size;if($number)return$number;if($size)return'Tiraje de '.$size;return'';}
