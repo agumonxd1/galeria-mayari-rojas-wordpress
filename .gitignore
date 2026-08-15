@@ -1,0 +1,50 @@
+# Local and generated files
+tmp/
+output/
+.DS_Store
+Thumbs.db
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+mayari_codex
+
+# Backups and packages
+*.zip
+*.tar
+*.tar.gz
+*.sql
+*.sql.gz
+*.bak
+
+# Large source media kept outside Git
+artistas/
+escultura/
+pinturas/
+/*.jpg
+/*.jpeg
+/*.png
+*.fla
+*.psd
+
+# WordPress runtime content
+src/wp-content/uploads/
+src/wp-content/cache/
+src/wp-content/upgrade/
+src/wp-content/backup*/
+src/wp-content/duplicator-backups/
+
+# Dependencies and build output
+node_modules/
+vendor/
+dist/
+build/
+coverage/
+
+# Editor settings
+.idea/
+.vscode/
+*.swp
