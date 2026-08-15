@@ -33,6 +33,7 @@ final class GMR_Core_Plugin {
 		GMR_Core_Admin_Artwork::register_hooks();
 		GMR_Core_Admin_Terms::register_hooks();
 		GMR_Core_Migration_Preview::register_hooks();
+		GMR_Core_Migration::register_hooks();
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			GMR_Core_Catalog::register_hooks();

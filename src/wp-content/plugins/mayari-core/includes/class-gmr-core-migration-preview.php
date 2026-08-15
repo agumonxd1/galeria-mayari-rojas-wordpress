@@ -21,6 +21,9 @@ final class GMR_Core_Migration_Preview {
 		'de-las-doncellas', 'de-las-doncellas-del-campo', 'de-las-poesias', 'de-las-tradiciones',
 	);
 
+	public static function legacy_artist_slugs(): array { return self::ARTISTS; }
+	public static function legacy_collection_slugs(): array { return self::COLLECTIONS; }
+
 	public static function register_hooks(): void {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::add_command( 'gmr migration-preview', array( self::class, 'command' ) );
@@ -82,6 +85,8 @@ final class GMR_Core_Migration_Preview {
 		}
 		$disciplines = array_values( array_intersect( array_keys( $by_slug ), self::DISCIPLINES ) );
 		$artists     = array_values( array_intersect( array_keys( $by_slug ), self::ARTISTS ) );
+		$canonical_artists = wp_get_post_terms( $product_id, 'gmr_artist', array( 'fields' => 'slugs' ) );
+		if ( ! is_wp_error( $canonical_artists ) && $canonical_artists ) $artists = array_values( $canonical_artists );
 		$collections = array_values( array_intersect( array_keys( $by_slug ), self::COLLECTIONS ) );
 		$year_raw    = self::attribute_text( $product_id, 'pa_ano' );
 		$measure_values = self::attribute_values( $product_id, 'pa_medidas' );
@@ -119,6 +124,10 @@ final class GMR_Core_Migration_Preview {
 		if ( '' === $tech_raw ) {
 			$technical['techniques'] = array( 'sin-tecnica' );
 			$resolutions[] = 'technique_missing_to_none';
+		}
+		if ( empty( $technical['techniques'] ) ) {
+			$technical['techniques'] = array( 'sin-tecnica' );
+			$resolutions[] = 'no_strict_technique_to_none';
 		}
 		if ( ! has_post_thumbnail( $product_id ) ) $resolutions[] = 'image_missing_to_attachment_2753';
 		if ( '' === (string) get_post_meta( $product_id, '_sku', true ) ) $resolutions[] = 'sku_generated_gmr_legacy_' . $product_id;
