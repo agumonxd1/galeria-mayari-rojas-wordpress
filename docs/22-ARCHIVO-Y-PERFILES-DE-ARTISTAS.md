@@ -2,8 +2,10 @@
 
 ## Archivo general
 
-- Composición bento editorial con un artista principal y tarjetas de proporciones variables.
-- Elmar Rojas se prioriza como artista destacado.
+- Composición modular compacta de tres columnas, con tarjetas de igual tamaño y peso editorial.
+- Elmar Rojas aparece primero, pero conserva el mismo tratamiento visual que los demás artistas.
+- Nombre, cantidad de obras y acceso se superponen sobre cada imagen.
+- El archivo no imprime biografías ni extractos para mantener una lectura visual uniforme.
 - Sólo aparecen artistas con obras visibles, salvo para administradores de catálogo.
 - Si falta retrato o portada se utiliza la imagen destacada de una obra pública del artista.
 
