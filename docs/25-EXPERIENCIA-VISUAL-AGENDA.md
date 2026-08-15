@@ -14,6 +14,7 @@
 - Cuando no existen fechas futuras, la página se presenta como **Memoria cultural**, evitando una agenda aparentemente desactualizada.
 - La primera tarjeta del archivo recibe un formato panorámico destacado; las demás forman una retícula editorial de dos columnas.
 - Cada tarjeta contiene imagen, estado, tipo, fecha, título, extracto opcional y acceso a la ficha.
+- Imagen y contenido forman una sola unidad con borde, fondo y radio continuos, evitando que el texto parezca pertenecer a la tarjeta siguiente.
 - Al cambiar de filtro, las tarjetas entran y salen con una transición breve compatible con `prefers-reduced-motion`.
 
 ## Ficha individual
