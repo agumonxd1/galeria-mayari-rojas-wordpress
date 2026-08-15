@@ -16,6 +16,7 @@ final class GMR_Core_Catalog {
 		add_filter( 'woocommerce_loop_add_to_cart_link', '__return_empty_string', 99 );
 		add_action( 'wp', array( self::class, 'remove_purchase_ui' ) );
 		add_action( 'template_redirect', array( self::class, 'redirect_commerce_pages' ), 5 );
+		add_filter( 'woocommerce_structured_data_product', array( self::class, 'filter_structured_data' ), 99, 2 );
 	}
 
 	public static function filter_price_html( string $html, WC_Product $product ): string {
@@ -41,5 +42,11 @@ final class GMR_Core_Catalog {
 			exit;
 		}
 	}
-}
 
+	public static function filter_structured_data( array $markup, WC_Product $product ): array {
+		if ( ! GMR_Core_Access::can_view_price( $product->get_id() ) ) {
+			unset( $markup['offers'], $markup['price'], $markup['lowPrice'], $markup['highPrice'], $markup['priceCurrency'] );
+		}
+		return $markup;
+	}
+}

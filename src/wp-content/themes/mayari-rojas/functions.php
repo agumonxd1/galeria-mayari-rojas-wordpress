@@ -76,8 +76,12 @@ function gmr_theme_can_view_price( int $post_id ): bool {
 	return 'collectors' === $visibility && current_user_can( 'gmr_view_private_prices' );
 }
 function gmr_theme_visibility_meta_query(): array {
-	$allowed = current_user_can( 'gmr_view_collector_catalog' ) ? array( 'public', 'collectors' ) : array( 'public' );
-	return array( 'relation' => 'OR', array( 'key' => 'gmr_visibility', 'value' => $allowed, 'compare' => 'IN' ), array( 'key' => 'gmr_visibility', 'compare' => 'NOT EXISTS' ) );
+	return class_exists( 'GMR_Core_Access' ) ? GMR_Core_Access::visibility_meta_query() : array( 'relation'=>'OR', array( 'key'=>'gmr_visibility','value'=>'public' ), array( 'key'=>'gmr_visibility','compare'=>'NOT EXISTS' ) );
+}
+function gmr_theme_can_view_term( int $term_id ): bool { return ! class_exists( 'GMR_Core_Access' ) || GMR_Core_Access::can_view_term( $term_id ); }
+function gmr_theme_visible_work_count( string $taxonomy, int $term_id ): int {
+	$query = new WP_Query( array( 'post_type'=>'product', 'post_status'=>'publish', 'fields'=>'ids', 'posts_per_page'=>1, 'no_found_rows'=>false, 'tax_query'=>array( array( 'taxonomy'=>$taxonomy, 'field'=>'term_id', 'terms'=>$term_id ) ), 'meta_query'=>array( gmr_theme_visibility_meta_query() ) ) );
+	return (int) $query->found_posts;
 }
 function gmr_theme_page_url( string $slug ): string {
 	$page = get_page_by_path( $slug );
