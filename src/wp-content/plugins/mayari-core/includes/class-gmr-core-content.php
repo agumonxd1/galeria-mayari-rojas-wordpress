@@ -19,12 +19,13 @@ final class GMR_Core_Content {
 		self::register_artwork_taxonomies();
 		self::register_event_type();
 		self::register_media_gallery_type();
+		self::register_tribute_type();
 	}
 
 	private static function register_artist_taxonomy(): void {
 		register_taxonomy(
 			'gmr_artist',
-			array( 'product', 'post', 'gmr_event', 'gmr_media_gallery' ),
+			array( 'product', 'post', 'gmr_event', 'gmr_media_gallery', 'gmr_tribute' ),
 			array(
 				'labels'            => self::taxonomy_labels( 'Artista', 'Artistas' ),
 				'public'            => true,
@@ -131,6 +132,18 @@ final class GMR_Core_Content {
 				'rewrite'      => array( 'slug' => 'archivo-multimedia/tema', 'with_front' => false ),
 			)
 		);
+	}
+
+	private static function register_tribute_type(): void {
+		register_post_type( 'gmr_tribute', array(
+			'labels'       => self::post_type_labels( 'Voz sobre Elmar', 'Voces sobre Elmar' ),
+			'public'       => true,
+			'show_in_rest' => true,
+			'has_archive'  => 'elmar-rojas/voces',
+			'rewrite'      => array( 'slug' => 'elmar-rojas/voces', 'with_front' => false ),
+			'menu_icon'    => 'dashicons-format-quote',
+			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+		) );
 	}
 
 	private static function taxonomy_labels( string $singular, string $plural ): array {

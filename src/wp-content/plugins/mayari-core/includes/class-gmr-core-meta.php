@@ -88,6 +88,7 @@ final class GMR_Core_Meta {
 
 		self::register_shared_visibility( 'gmr_event' );
 		self::register_shared_visibility( 'gmr_media_gallery' );
+		self::register_shared_visibility( 'gmr_tribute' );
 		self::register_editorial_meta();
 		self::register_term_meta();
 	}
@@ -107,8 +108,16 @@ final class GMR_Core_Meta {
 			'gmr_media_credits'    => 'sanitize_textarea_field',
 			'gmr_media_ids'        => array( self::class, 'sanitize_attachment_ids' ),
 		);
+		$tribute_fields = array(
+			'gmr_tribute_author' => 'sanitize_text_field',
+			'gmr_tribute_role'   => 'sanitize_text_field',
+			'gmr_tribute_source' => 'sanitize_text_field',
+			'gmr_tribute_date'   => 'sanitize_text_field',
+		);
 		foreach ( $event_fields as $key => $sanitize ) self::register_editorial_field( 'gmr_event', $key, $sanitize );
 		foreach ( $media_fields as $key => $sanitize ) self::register_editorial_field( 'gmr_media_gallery', $key, $sanitize );
+		foreach ( $tribute_fields as $key => $sanitize ) self::register_editorial_field( 'gmr_tribute', $key, $sanitize );
+		register_post_meta( 'gmr_tribute', 'gmr_tribute_featured', array( 'type' => 'boolean', 'single' => true, 'show_in_rest' => false, 'sanitize_callback' => 'rest_sanitize_boolean', 'auth_callback' => static fn() => current_user_can( 'edit_posts' ) ) );
 		register_post_meta( 'gmr_event', 'gmr_event_all_day', array( 'type' => 'boolean', 'single' => true, 'show_in_rest' => false, 'sanitize_callback' => 'rest_sanitize_boolean', 'auth_callback' => static fn() => current_user_can( 'edit_posts' ) ) );
 	}
 

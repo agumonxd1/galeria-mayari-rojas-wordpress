@@ -7,6 +7,7 @@ final class GMR_Core_Admin_Editorial {
 		add_action( 'add_meta_boxes', array( self::class, 'add_boxes' ) );
 		add_action( 'save_post_gmr_event', array( self::class, 'save_event' ) );
 		add_action( 'save_post_gmr_media_gallery', array( self::class, 'save_media' ) );
+		add_action( 'save_post_gmr_tribute', array( self::class, 'save_tribute' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
 	}
 	public static function enqueue_assets( string $hook ): void {
@@ -18,6 +19,7 @@ final class GMR_Core_Admin_Editorial {
 	public static function add_boxes(): void {
 		add_meta_box( 'gmr-event-details', 'Datos de agenda', array( self::class, 'event_box' ), 'gmr_event', 'normal', 'high' );
 		add_meta_box( 'gmr-media-details', 'Datos multimedia', array( self::class, 'media_box' ), 'gmr_media_gallery', 'normal', 'high' );
+		add_meta_box( 'gmr-tribute-details', 'Datos de la voz', array( self::class, 'tribute_box' ), 'gmr_tribute', 'normal', 'high' );
 	}
 
 	public static function event_box( WP_Post $post ): void {
@@ -41,6 +43,15 @@ final class GMR_Core_Admin_Editorial {
 		echo '<p><button type="button" class="button" id="gmr-select-media">Seleccionar u ordenar imagenes</button></p><div id="gmr-media-preview"></div><p class="description">Use la imagen destacada como portada. El selector conserva el orden elegido.</p>';
 		self::select( $post, 'gmr_visibility', 'Visibilidad', array( 'public' => 'Publico', 'collectors' => 'Coleccionistas', 'hidden' => 'Oculto' ) );
 	}
+	public static function tribute_box( WP_Post $post ): void {
+		wp_nonce_field( 'gmr_editorial_save', 'gmr_editorial_nonce' );
+		self::field( $post, 'gmr_tribute_author', 'Autor o autora' );
+		self::field( $post, 'gmr_tribute_role', 'Profesion, cargo o semblanza' );
+		self::field( $post, 'gmr_tribute_source', 'Fuente o publicacion' );
+		self::field( $post, 'gmr_tribute_date', 'Fecha o periodo' );
+		printf( '<p><label><input type="checkbox" name="gmr_tribute_featured" value="1" %s> Destacar esta voz</label></p>', checked( get_post_meta( $post->ID, 'gmr_tribute_featured', true ), true, false ) );
+		self::select( $post, 'gmr_visibility', 'Visibilidad', array( 'public' => 'Publico', 'collectors' => 'Coleccionistas', 'hidden' => 'Oculto' ) );
+	}
 
 	private static function field( WP_Post $post, string $key, string $label, string $type = 'text' ): void {
 		printf( '<p><label for="%1$s"><strong>%2$s</strong></label><br><input class="widefat" type="%3$s" id="%1$s" name="%1$s" value="%4$s"></p>', esc_attr( $key ), esc_html( $label ), esc_attr( $type ), esc_attr( get_post_meta( $post->ID, $key, true ) ) );
@@ -55,6 +66,7 @@ final class GMR_Core_Admin_Editorial {
 
 	public static function save_event( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_event_start', 'gmr_event_end', 'gmr_event_venue', 'gmr_event_address', 'gmr_event_modality', 'gmr_event_status', 'gmr_event_registration', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_event_all_day', isset( $_POST['gmr_event_all_day'] ) ); }
 	public static function save_media( int $post_id ): void { self::save( $post_id, array( 'gmr_media_date_label', 'gmr_media_credits', 'gmr_media_ids', 'gmr_visibility' ) ); }
+	public static function save_tribute( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_tribute_author', 'gmr_tribute_role', 'gmr_tribute_source', 'gmr_tribute_date', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_tribute_featured', isset( $_POST['gmr_tribute_featured'] ) ); }
 	private static function save( int $post_id, array $keys ): bool {
 		if ( ! isset( $_POST['gmr_editorial_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_editorial_nonce'] ) ), 'gmr_editorial_save' ) || ! current_user_can( 'edit_post', $post_id ) ) return false;
 		foreach ( $keys as $key ) if ( isset( $_POST[ $key ] ) ) update_post_meta( $post_id, $key, wp_unslash( $_POST[ $key ] ) );

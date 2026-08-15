@@ -13,6 +13,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-fonts', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap', array(), null );
 	wp_enqueue_style( 'gmr-theme', get_stylesheet_uri(), array( 'gmr-fonts' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-editorial', get_template_directory_uri() . '/assets/editorial.css', array( 'gmr-theme' ), wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( 'gmr-voices', get_template_directory_uri() . '/assets/voices.css', array( 'gmr-editorial' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -100,6 +101,6 @@ function gmr_theme_order_terms( array $terms, string $meta_key ): array {
 	return $terms;
 }
 function gmr_theme_menu_fallback(): void {
-	$items = array( 'La galeria' => gmr_theme_page_url( 'la-galeria' ), 'Elmar Rojas' => gmr_theme_page_url( 'elmar-rojas' ), 'Artistas' => gmr_theme_page_url( 'artistas' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Colecciones' => gmr_theme_page_url( 'colecciones' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ), 'Noticias' => gmr_theme_page_url( 'noticias' ) );
+	$items = array( 'La galeria' => gmr_theme_page_url( 'la-galeria' ), 'Elmar Rojas' => gmr_theme_page_url( 'elmar-rojas' ), 'Artistas' => gmr_theme_page_url( 'artistas' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Colecciones' => gmr_theme_page_url( 'colecciones' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ) );
 	echo '<ul>'; foreach ( $items as $label => $url ) printf( '<li><a href="%s">%s</a></li>', esc_url( $url ), esc_html( $label ) ); echo '</ul>';
 }

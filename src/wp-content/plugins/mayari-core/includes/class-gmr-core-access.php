@@ -43,7 +43,7 @@ final class GMR_Core_Access {
 	}
 
 	public static function protect_singular_content(): void {
-		if ( ! is_singular( array( 'product', 'gmr_event', 'gmr_media_gallery' ) ) ) {
+		if ( ! is_singular( array( 'product', 'gmr_event', 'gmr_media_gallery', 'gmr_tribute' ) ) ) {
 			return;
 		}
 
@@ -64,8 +64,8 @@ final class GMR_Core_Access {
 		}
 
 		$post_type = $query->get( 'post_type' );
-		$is_protected_archive = $query->is_search() || is_post_type_archive( array( 'product', 'gmr_event', 'gmr_media_gallery' ) ) || is_tax( array( 'product_cat', 'gmr_artist', 'gmr_collection' ) );
-		if ( ! $is_protected_archive && ! in_array( $post_type, array( 'product', 'gmr_event', 'gmr_media_gallery' ), true ) ) {
+		$is_protected_archive = $query->is_search() || is_post_type_archive( array( 'product', 'gmr_event', 'gmr_media_gallery', 'gmr_tribute' ) ) || is_tax( array( 'product_cat', 'gmr_artist', 'gmr_collection' ) );
+		if ( ! $is_protected_archive && ! in_array( $post_type, array( 'product', 'gmr_event', 'gmr_media_gallery', 'gmr_tribute' ), true ) ) {
 			return;
 		}
 
@@ -87,4 +87,3 @@ final class GMR_Core_Access {
 		$query->set( 'meta_query', $meta_query );
 	}
 }
-
