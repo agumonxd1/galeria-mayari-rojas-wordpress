@@ -20,6 +20,7 @@ final class GMR_Core_Content {
 		self::register_event_type();
 		self::register_media_gallery_type();
 		self::register_tribute_type();
+		self::register_inquiry_type();
 		add_rewrite_rule( '^events?/([^/]+)/?$', 'index.php?gmr_event=$matches[1]', 'top' );
 	}
 
@@ -144,6 +145,19 @@ final class GMR_Core_Content {
 			'rewrite'      => array( 'slug' => 'elmar-rojas/voces', 'with_front' => false ),
 			'menu_icon'    => 'dashicons-format-quote',
 			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
+		) );
+	}
+
+	private static function register_inquiry_type(): void {
+		register_post_type( 'gmr_inquiry', array(
+			'labels' => self::post_type_labels( 'Consulta de obra', 'Consultas de obra' ),
+			'public' => false,
+			'show_ui' => true,
+			'show_in_menu' => true,
+			'show_in_rest' => false,
+			'menu_icon' => 'dashicons-email-alt',
+			'supports' => array( 'title' ),
+			'capability_type' => 'post',
 		) );
 	}
 
