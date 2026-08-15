@@ -1,3 +1,1 @@
-<?php get_header(); $term=get_queried_object(); ?>
-<header class="gmr-archive-head"><div class="gmr-wrap"><span class="gmr-kicker">Disciplina</span><h1 class="gmr-page-title"><?php single_term_title(); ?></h1><?php if ( term_description() ) echo wp_kses_post( term_description() ); ?></div></header>
-<section class="gmr-section"><div class="gmr-wrap"><?php if(have_posts()){echo '<div class="gmr-grid">';while(have_posts()){the_post();get_template_part('template-parts/artwork','card');}echo '</div>';the_posts_pagination();}else echo '<p class="gmr-empty">No hay obras disponibles.</p>';?></div></section><?php get_footer(); ?>
+<?php require get_theme_file_path('archive-product.php');

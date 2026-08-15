@@ -21,6 +21,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-institution', get_template_directory_uri() . '/assets/institution.css', array( 'gmr-inquiry' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-design-system', get_template_directory_uri() . '/assets/design-system.css', array( 'gmr-institution' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_front_page() ) wp_enqueue_style( 'gmr-home', get_template_directory_uri() . '/assets/home.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_post_type_archive('product') || is_tax(array('product_cat','gmr_artist','gmr_collection')) || is_singular('product') ) wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -48,7 +49,7 @@ add_action( 'pre_get_posts', function( WP_Query $query ) {
 			$query->set( 'tax_query', array( array( 'taxonomy' => 'gmr_artist', 'field' => 'slug', 'terms' => sanitize_title( wp_unslash( $_GET['artista'] ) ) ) ) );
 		}
 		if ( ! empty( $_GET['estado'] ) ) {
-			$query->set( 'meta_query', array( array( 'key' => 'gmr_availability', 'value' => sanitize_key( wp_unslash( $_GET['estado'] ) ) ) ) );
+			$query->set( 'meta_query', array( gmr_theme_visibility_meta_query(), array( 'key' => 'gmr_commercial_status', 'value' => sanitize_key( wp_unslash( $_GET['estado'] ) ) ) ) );
 		}
 	}
 	if ( $query->is_post_type_archive( 'gmr_event' ) || $query->is_tax( 'gmr_event_type' ) ) {
@@ -100,6 +101,11 @@ function gmr_theme_event_date( int $post_id ): string {
 function gmr_theme_event_types( int $post_id ): string {
 	return gmr_theme_term_names( $post_id, 'gmr_event_type' );
 }
+function gmr_theme_commercial_labels():array{return array('available'=>'Disponible','reserved'=>'Reservada','sold'=>'Vendida','not_available'=>'No disponible','on_exhibition'=>'En exposición','archive'=>'Archivo');}
+function gmr_theme_commercial_label(string $status):string{$labels=gmr_theme_commercial_labels();return$labels[$status]??ucfirst(str_replace('_',' ',$status));}
+function gmr_theme_edition_label(int $post_id):string{$number=trim((string)get_post_meta($post_id,'gmr_edition_number',true));$size=trim((string)get_post_meta($post_id,'gmr_edition_size',true));if($number&&$size)return$number.' de '.$size;if($number)return$number;if($size)return'Tiraje de '.$size;return'';}
+function gmr_theme_signature_label(int $post_id):string{$status=get_post_meta($post_id,'gmr_signature_status',true);$labels=array('signed'=>'Firmada','unsigned'=>'Sin firma','attributed'=>'Atribuida','unknown'=>'');$label=$labels[$status]??'';$location=trim((string)get_post_meta($post_id,'gmr_signature_location',true));return trim($label.($label&&$location?' · ':'').$location);}
+function gmr_theme_certificate_label(int $post_id):string{$labels=array('included'=>'Incluido','available'=>'Disponible','not_available'=>'No disponible','unknown'=>'');return$labels[get_post_meta($post_id,'gmr_certificate_status',true)]??'';}
 function gmr_theme_order_terms( array $terms, string $meta_key ): array {
 	usort( $terms, static function( WP_Term $a, WP_Term $b ) use ( $meta_key ): int {
 		$a_order = (int) get_term_meta( $a->term_id, $meta_key, true );
