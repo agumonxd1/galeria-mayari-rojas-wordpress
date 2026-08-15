@@ -12,5 +12,5 @@ update_term_meta( $term->term_id, 'gmr_artist_history', $history );
 update_term_meta( $term->term_id, 'gmr_artist_chronology', $chronology );
 update_term_meta( $term->term_id, 'gmr_artist_awards', $awards );
 update_term_meta( $term->term_id, 'gmr_artist_media_ids', '5213,5214' );
-update_term_meta( $term->term_id, 'gmr_artist_document_ids', '6494' );
+delete_term_meta( $term->term_id, 'gmr_artist_document_ids' );
 echo wp_json_encode( array( 'term_id' => $term->term_id, 'media' => 2, 'documents' => 1, 'awards' => 7 ) ) . "\n";

@@ -21,6 +21,7 @@ final class GMR_Core_Content {
 		self::register_media_gallery_type();
 		self::register_tribute_type();
 		self::register_inquiry_type();
+		self::register_document_type();
 		add_rewrite_rule( '^events?/([^/]+)/?$', 'index.php?gmr_event=$matches[1]', 'top' );
 	}
 
@@ -158,6 +159,13 @@ final class GMR_Core_Content {
 			'menu_icon' => 'dashicons-email-alt',
 			'supports' => array( 'title' ),
 			'capability_type' => 'post',
+		) );
+	}
+
+	private static function register_document_type(): void {
+		register_post_type( 'gmr_document', array(
+			'labels' => self::post_type_labels( 'Documento privado', 'Documentos privados' ),
+			'public' => false, 'show_ui' => false, 'show_in_rest' => false, 'supports' => array( 'title' ),
 		) );
 	}
 
