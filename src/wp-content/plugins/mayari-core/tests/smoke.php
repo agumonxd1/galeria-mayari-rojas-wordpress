@@ -61,4 +61,3 @@ echo PHP_EOL;
 if ( $failed ) {
 	exit( 1 );
 }
-
