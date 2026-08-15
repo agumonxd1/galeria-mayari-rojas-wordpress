@@ -21,11 +21,12 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-institution', get_template_directory_uri() . '/assets/institution.css', array( 'gmr-inquiry' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-design-system', get_template_directory_uri() . '/assets/design-system.css', array( 'gmr-institution' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_front_page() ) wp_enqueue_style( 'gmr-home', get_template_directory_uri() . '/assets/home.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
-	if ( is_post_type_archive('product') || is_tax(array('product_cat','gmr_artist','gmr_collection')) || is_singular('product') ) wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_post_type_archive('product') || is_tax(array('product_cat','gmr_artist','gmr_collection')) || is_singular('product') || is_page('elmar-rojas') ) wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_page('artistas') || is_tax('gmr_artist') ) {
 		wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_style( 'gmr-artists', get_template_directory_uri() . '/assets/artists.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
 	}
+	if ( is_page('elmar-rojas') ) wp_enqueue_style( 'gmr-elmar-special', get_template_directory_uri() . '/assets/elmar-special.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
