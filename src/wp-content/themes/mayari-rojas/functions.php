@@ -16,6 +16,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-voices', get_template_directory_uri() . '/assets/voices.css', array( 'gmr-editorial' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-elmar', get_template_directory_uri() . '/assets/elmar.css', array( 'gmr-voices' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-inquiry', get_template_directory_uri() . '/assets/inquiry.css', array( 'gmr-elmar' ), wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( 'gmr-institution', get_template_directory_uri() . '/assets/institution.css', array( 'gmr-inquiry' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -26,7 +27,7 @@ add_filter( 'template_include', function( string $template ): string {
 		$front = get_theme_file_path( 'front-page.php' );
 		if ( is_readable( $front ) ) return $front;
 	}
-	foreach ( array( 'artistas', 'elmar-rojas', 'colecciones', 'coleccionistas', 'actividades', 'noticias' ) as $slug ) {
+	foreach ( array( 'artistas', 'elmar-rojas', 'colecciones', 'coleccionistas', 'actividades', 'noticias', 'la-galeria', 'contacto' ) as $slug ) {
 		if ( is_page( $slug ) ) {
 			$editorial = get_theme_file_path( 'page-' . $slug . '.php' );
 			if ( is_readable( $editorial ) ) return $editorial;
