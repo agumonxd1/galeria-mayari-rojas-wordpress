@@ -133,6 +133,10 @@ final class GMR_Core_Meta {
 		$artist = array(
 			'gmr_artist_biography'        => array( 'string', 'wp_kses_post' ),
 			'gmr_artist_history'          => array( 'string', 'wp_kses_post' ),
+			'gmr_artist_chronology'       => array( 'string', 'wp_kses_post' ),
+			'gmr_artist_awards'           => array( 'string', 'wp_kses_post' ),
+			'gmr_artist_document_ids'     => array( 'string', array( self::class, 'sanitize_attachment_ids' ) ),
+			'gmr_artist_media_ids'        => array( 'string', array( self::class, 'sanitize_attachment_ids' ) ),
 			'gmr_artist_portrait_id'      => array( 'integer', 'absint' ),
 			'gmr_artist_cover_id'         => array( 'integer', 'absint' ),
 			'gmr_artist_featured'         => array( 'boolean', 'rest_sanitize_boolean' ),

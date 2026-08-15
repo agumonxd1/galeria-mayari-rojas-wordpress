@@ -59,6 +59,10 @@ final class GMR_Core_Admin_Terms {
 		self::media_field( 'gmr_artist_cover_id', 'Portada', $term, $table, 'Imagen panoramica para la cabecera del perfil.' );
 		self::editor_field( 'gmr_artist_biography', 'Biografia', $term, $table );
 		self::editor_field( 'gmr_artist_history', 'Historia y trayectoria', $term, $table );
+		self::editor_field( 'gmr_artist_chronology', 'Cronologia', $term, $table );
+		self::editor_field( 'gmr_artist_awards', 'Premios y reconocimientos', $term, $table );
+		self::multi_media_field( 'gmr_artist_media_ids', 'Archivo fotografico', $term, $table, 'Seleccione y ordene fotografias editoriales.' );
+		self::multi_media_field( 'gmr_artist_document_ids', 'Documentos y publicaciones', $term, $table, 'Seleccione documentos PDF o imagenes de publicaciones.' );
 		self::select_field( 'gmr_artist_special_template', 'Presentacion especial', $term, $table, array( '' => 'Estandar', 'elmar' => 'Elmar Rojas' ) );
 		self::checkbox_field( 'gmr_artist_featured', 'Artista destacado', $term, $table );
 		self::number_field( 'gmr_artist_order', 'Orden editorial', $term, $table );
@@ -122,6 +126,14 @@ final class GMR_Core_Admin_Terms {
 		self::wrap( $key, $label, $control, $table, $description );
 	}
 
+	private static function multi_media_field( string $key, string $label, ?WP_Term $term, bool $table, string $description ): void {
+		$ids = array_filter( array_map( 'absint', explode( ',', (string) self::field_value( $term, $key ) ) ) );
+		$preview = '';
+		foreach ( $ids as $id ) $preview .= wp_get_attachment_image( $id, array( 64, 64 ) ) ?: '<span>' . esc_html( get_the_title( $id ) ) . '</span>';
+		$control = sprintf( '<div class="gmr-multi-media-field"><input type="hidden" id="%1$s" name="%1$s" value="%2$s"><div class="gmr-media-preview">%3$s</div><button type="button" class="button gmr-select-multiple">Seleccionar y ordenar</button> <button type="button" class="button-link-delete gmr-clear-multiple">Vaciar</button></div>', esc_attr( $key ), esc_attr( implode( ',', $ids ) ), $preview );
+		self::wrap( $key, $label, $control, $table, $description );
+	}
+
 	private static function artist_selector( ?WP_Term $term, bool $table ): void {
 		$selected = array_map( 'absint', (array) self::field_value( $term, 'gmr_collection_artists', array() ) );
 		$artists  = get_terms( array( 'taxonomy' => 'gmr_artist', 'hide_empty' => false ) );
@@ -144,7 +156,7 @@ final class GMR_Core_Admin_Terms {
 			return;
 		}
 		$fields = 'gmr_artist' === $term->taxonomy
-			? array( 'gmr_artist_biography', 'gmr_artist_history', 'gmr_artist_portrait_id', 'gmr_artist_cover_id', 'gmr_artist_featured', 'gmr_artist_special_template', 'gmr_artist_order' )
+			? array( 'gmr_artist_biography', 'gmr_artist_history', 'gmr_artist_chronology', 'gmr_artist_awards', 'gmr_artist_media_ids', 'gmr_artist_document_ids', 'gmr_artist_portrait_id', 'gmr_artist_cover_id', 'gmr_artist_featured', 'gmr_artist_special_template', 'gmr_artist_order' )
 			: array( 'gmr_collection_subtitle', 'gmr_collection_year_start', 'gmr_collection_year_end', 'gmr_collection_text', 'gmr_collection_cover_id', 'gmr_collection_artists', 'gmr_visibility', 'gmr_collection_order' );
 		foreach ( $fields as $key ) {
 			$value = $_POST[ $key ] ?? ( 'gmr_artist_featured' === $key ? false : ( 'gmr_collection_artists' === $key ? array() : '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
