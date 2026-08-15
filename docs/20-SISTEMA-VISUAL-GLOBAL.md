@@ -33,6 +33,7 @@ Los tokens viven en `assets/design-system.css`:
 - Navegacion de escritorio y panel movil.
 - Acceso a Coleccionistas como control capsula.
 - Titulares, kickers, botones, filtros, tarjetas, formularios y paginacion.
+- Encabezados de archivos públicos con la escala compacta aprobada en Artistas; aplicada a Catálogo, Colecciones y Agenda.
 - Footer editorial con llamada institucional.
 - Estados de foco visibles y enlace para saltar al contenido.
 - Respeto de `prefers-reduced-motion`.

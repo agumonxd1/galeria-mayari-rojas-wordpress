@@ -31,7 +31,10 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_enqueue_style( 'gmr-artists', get_template_directory_uri() . '/assets/artists.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
 	}
 	if ( is_page('elmar-rojas') ) wp_enqueue_style( 'gmr-elmar-special', get_template_directory_uri() . '/assets/elmar-special.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
-	if ( is_post_type_archive('gmr_event') || is_tax('gmr_event_type') || is_singular('gmr_event') || is_page('actividades') ) wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_post_type_archive('gmr_event') || is_tax('gmr_event_type') || is_singular('gmr_event') || is_page('actividades') ) {
+		wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_script( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.js', array(), wp_get_theme()->get( 'Version' ), true );
+	}
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
