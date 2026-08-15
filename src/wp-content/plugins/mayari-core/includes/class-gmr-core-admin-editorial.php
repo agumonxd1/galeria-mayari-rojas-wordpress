@@ -7,6 +7,12 @@ final class GMR_Core_Admin_Editorial {
 		add_action( 'add_meta_boxes', array( self::class, 'add_boxes' ) );
 		add_action( 'save_post_gmr_event', array( self::class, 'save_event' ) );
 		add_action( 'save_post_gmr_media_gallery', array( self::class, 'save_media' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
+	}
+	public static function enqueue_assets( string $hook ): void {
+		if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) || 'gmr_media_gallery' !== get_current_screen()->post_type ) return;
+		wp_enqueue_media();
+		wp_enqueue_script( 'gmr-admin-editorial', plugins_url( 'assets/admin-editorial.js', GMR_CORE_FILE ), array( 'jquery' ), GMR_CORE_VERSION, true );
 	}
 
 	public static function add_boxes(): void {
@@ -31,8 +37,8 @@ final class GMR_Core_Admin_Editorial {
 		wp_nonce_field( 'gmr_editorial_save', 'gmr_editorial_nonce' );
 		self::field( $post, 'gmr_media_date_label', 'Fecha o periodo' );
 		self::field( $post, 'gmr_media_credits', 'Creditos y derechos' );
-		self::field( $post, 'gmr_media_ids', 'IDs de imagenes, separados por coma' );
-		echo '<p class="description">Use la imagen destacada como portada. Pegue aqui los IDs de las fotografias en el orden deseado.</p>';
+		self::field( $post, 'gmr_media_ids', 'Imagenes seleccionadas' );
+		echo '<p><button type="button" class="button" id="gmr-select-media">Seleccionar u ordenar imagenes</button></p><div id="gmr-media-preview"></div><p class="description">Use la imagen destacada como portada. El selector conserva el orden elegido.</p>';
 		self::select( $post, 'gmr_visibility', 'Visibilidad', array( 'public' => 'Publico', 'collectors' => 'Coleccionistas', 'hidden' => 'Oculto' ) );
 	}
 
