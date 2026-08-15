@@ -22,6 +22,10 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-design-system', get_template_directory_uri() . '/assets/design-system.css', array( 'gmr-institution' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_front_page() ) wp_enqueue_style( 'gmr-home', get_template_directory_uri() . '/assets/home.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_post_type_archive('product') || is_tax(array('product_cat','gmr_artist','gmr_collection')) || is_singular('product') ) wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_page('artistas') || is_tax('gmr_artist') ) {
+		wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_style( 'gmr-artists', get_template_directory_uri() . '/assets/artists.css', array( 'gmr-catalog' ), wp_get_theme()->get( 'Version' ) );
+	}
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -106,6 +110,8 @@ function gmr_theme_commercial_label(string $status):string{$labels=gmr_theme_com
 function gmr_theme_edition_label(int $post_id):string{$number=trim((string)get_post_meta($post_id,'gmr_edition_number',true));$size=trim((string)get_post_meta($post_id,'gmr_edition_size',true));if($number&&$size)return$number.' de '.$size;if($number)return$number;if($size)return'Tiraje de '.$size;return'';}
 function gmr_theme_signature_label(int $post_id):string{$status=get_post_meta($post_id,'gmr_signature_status',true);$labels=array('signed'=>'Firmada','unsigned'=>'Sin firma','attributed'=>'Atribuida','unknown'=>'');$label=$labels[$status]??'';$location=trim((string)get_post_meta($post_id,'gmr_signature_location',true));return trim($label.($label&&$location?' · ':'').$location);}
 function gmr_theme_certificate_label(int $post_id):string{$labels=array('included'=>'Incluido','available'=>'Disponible','not_available'=>'No disponible','unknown'=>'');return$labels[get_post_meta($post_id,'gmr_certificate_status',true)]??'';}
+function gmr_theme_artist_url(WP_Term $artist):string{if('elmar-rojas'===$artist->slug||'elmar'===get_term_meta($artist->term_id,'gmr_artist_special_template',true))return gmr_theme_page_url('elmar-rojas');$url=get_term_link($artist);return is_wp_error($url)?gmr_theme_page_url('artistas'):$url;}
+function gmr_theme_artist_image_id(WP_Term $artist):int{$portrait=absint(get_term_meta($artist->term_id,'gmr_artist_portrait_id',true));$cover=absint(get_term_meta($artist->term_id,'gmr_artist_cover_id',true));if($portrait||$cover)return$portrait?:$cover;$works=new WP_Query(array('post_type'=>'product','post_status'=>'publish','posts_per_page'=>1,'fields'=>'ids','tax_query'=>array(array('taxonomy'=>'gmr_artist','field'=>'term_id','terms'=>$artist->term_id)),'meta_query'=>array(gmr_theme_visibility_meta_query())));return$works->posts?absint(get_post_thumbnail_id($works->posts[0])):0;}
 function gmr_theme_order_terms( array $terms, string $meta_key ): array {
 	usort( $terms, static function( WP_Term $a, WP_Term $b ) use ( $meta_key ): int {
 		$a_order = (int) get_term_meta( $a->term_id, $meta_key, true );
