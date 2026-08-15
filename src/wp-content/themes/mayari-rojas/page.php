@@ -1,0 +1,1 @@
+<?php get_header();while(have_posts()):the_post();?><header class="gmr-archive-head"><div class="gmr-wrap"><span class="gmr-kicker">Galeria Mayari Rojas</span><h1 class="gmr-page-title"><?php the_title();?></h1></div></header><section class="gmr-section"><div class="gmr-wrap gmr-editorial"><?php the_content();?></div></section><?php endwhile;get_footer();?>
