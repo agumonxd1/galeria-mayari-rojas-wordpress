@@ -1,16 +1,18 @@
 <?php
 defined( 'ABSPATH' ) || exit;
+require_once get_theme_file_path( 'inc/customizer.php' );
 
 add_action( 'after_setup_theme', function() {
 	load_theme_textdomain( 'mayari-rojas', get_template_directory() . '/languages' );
-	add_theme_support( 'title-tag' ); add_theme_support( 'post-thumbnails' ); add_theme_support( 'automatic-feed-links' );
+	add_theme_support( 'title-tag' ); add_theme_support( 'post-thumbnails' ); add_theme_support( 'automatic-feed-links' ); add_theme_support( 'custom-logo', array( 'height'=>180, 'width'=>600, 'flex-height'=>true, 'flex-width'=>true ) );
 	add_theme_support( 'html5', array( 'search-form', 'gallery', 'caption', 'style', 'script' ) );
 	add_theme_support( 'woocommerce', array( 'thumbnail_image_width' => 720, 'single_image_width' => 1400 ) );
 	register_nav_menus( array( 'primary' => 'Navegacion principal', 'footer' => 'Navegacion del pie' ) );
 } );
 
 add_action( 'wp_enqueue_scripts', function() {
-	wp_enqueue_style( 'gmr-fonts', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap', array(), null );
+	$heading=rawurlencode(gmr_theme_mod('gmr_font_headings'));$body=rawurlencode(gmr_theme_mod('gmr_font_body'));
+	wp_enqueue_style( 'gmr-fonts', 'https://fonts.googleapis.com/css2?family='.$heading.':wght@400;500;600&family='.$body.':wght@400;500;600&display=swap', array(), null );
 	wp_enqueue_style( 'gmr-theme', get_stylesheet_uri(), array( 'gmr-fonts' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-editorial', get_template_directory_uri() . '/assets/editorial.css', array( 'gmr-theme' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-voices', get_template_directory_uri() . '/assets/voices.css', array( 'gmr-editorial' ), wp_get_theme()->get( 'Version' ) );
