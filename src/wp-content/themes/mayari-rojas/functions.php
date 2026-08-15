@@ -22,6 +22,12 @@ add_filter( 'template_include', function( string $template ): string {
 		$front = get_theme_file_path( 'front-page.php' );
 		if ( is_readable( $front ) ) return $front;
 	}
+	foreach ( array( 'artistas', 'elmar-rojas', 'colecciones', 'coleccionistas' ) as $slug ) {
+		if ( is_page( $slug ) ) {
+			$editorial = get_theme_file_path( 'page-' . $slug . '.php' );
+			if ( is_readable( $editorial ) ) return $editorial;
+		}
+	}
 	return $template;
 }, 99 );
 add_action( 'pre_get_posts', function( WP_Query $query ) {
@@ -29,6 +35,12 @@ add_action( 'pre_get_posts', function( WP_Query $query ) {
 	if ( $query->is_post_type_archive( 'product' ) || $query->is_tax( array( 'product_cat', 'gmr_artist', 'gmr_collection' ) ) ) {
 		$query->set( 'posts_per_page', 18 );
 		$query->set( 'post_type', 'product' );
+		if ( ! empty( $_GET['artista'] ) ) {
+			$query->set( 'tax_query', array( array( 'taxonomy' => 'gmr_artist', 'field' => 'slug', 'terms' => sanitize_title( wp_unslash( $_GET['artista'] ) ) ) ) );
+		}
+		if ( ! empty( $_GET['estado'] ) ) {
+			$query->set( 'meta_query', array( array( 'key' => 'gmr_availability', 'value' => sanitize_key( wp_unslash( $_GET['estado'] ) ) ) ) );
+		}
 	}
 } );
 
@@ -56,7 +68,22 @@ function gmr_theme_visibility_meta_query(): array {
 	$allowed = current_user_can( 'gmr_view_collector_catalog' ) ? array( 'public', 'collectors' ) : array( 'public' );
 	return array( 'relation' => 'OR', array( 'key' => 'gmr_visibility', 'value' => $allowed, 'compare' => 'IN' ), array( 'key' => 'gmr_visibility', 'compare' => 'NOT EXISTS' ) );
 }
+function gmr_theme_page_url( string $slug ): string {
+	$page = get_page_by_path( $slug );
+	return $page instanceof WP_Post ? get_permalink( $page ) : home_url( '/' . trim( $slug, '/' ) . '/' );
+}
+function gmr_theme_order_terms( array $terms, string $meta_key ): array {
+	usort( $terms, static function( WP_Term $a, WP_Term $b ) use ( $meta_key ): int {
+		$a_order = (int) get_term_meta( $a->term_id, $meta_key, true );
+		$b_order = (int) get_term_meta( $b->term_id, $meta_key, true );
+		if ( $a_order === $b_order ) return strcasecmp( $a->name, $b->name );
+		if ( 0 === $a_order ) return 1;
+		if ( 0 === $b_order ) return -1;
+		return $a_order <=> $b_order;
+	} );
+	return $terms;
+}
 function gmr_theme_menu_fallback(): void {
-	$items = array( 'La galeria' => home_url( '/la-galeria/' ), 'Elmar Rojas' => home_url( '/elmar-rojas/' ), 'Artistas' => home_url( '/artistas/' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Colecciones' => home_url( '/colecciones/' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ) );
+	$items = array( 'La galeria' => gmr_theme_page_url( 'la-galeria' ), 'Elmar Rojas' => gmr_theme_page_url( 'elmar-rojas' ), 'Artistas' => gmr_theme_page_url( 'artistas' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Colecciones' => gmr_theme_page_url( 'colecciones' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ) );
 	echo '<ul>'; foreach ( $items as $label => $url ) printf( '<li><a href="%s">%s</a></li>', esc_url( $url ), esc_html( $label ) ); echo '</ul>';
 }

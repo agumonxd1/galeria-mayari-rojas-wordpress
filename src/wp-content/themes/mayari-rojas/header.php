@@ -4,5 +4,5 @@
 <button class="gmr-menu-toggle" type="button" aria-expanded="false" aria-controls="gmr-nav">Menu</button>
 <a class="gmr-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>">Mayari Rojas<small>Galeria de arte</small></a>
 <nav class="gmr-nav" id="gmr-nav" aria-label="Principal"><?php gmr_theme_menu_fallback(); ?></nav>
-<a class="gmr-account" href="<?php echo esc_url( is_user_logged_in() ? home_url( '/coleccionistas/' ) : wp_login_url( home_url( '/coleccionistas/' ) ) ); ?>">Coleccionistas</a>
+<a class="gmr-account" href="<?php echo esc_url( is_user_logged_in() ? gmr_theme_page_url( 'coleccionistas' ) : wp_login_url( gmr_theme_page_url( 'coleccionistas' ) ) ); ?>">Coleccionistas</a>
 </div></header><main id="main">
