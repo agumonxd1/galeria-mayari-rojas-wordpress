@@ -20,6 +20,7 @@ final class GMR_Core_Content {
 		self::register_event_type();
 		self::register_media_gallery_type();
 		self::register_tribute_type();
+		add_rewrite_rule( '^events?/([^/]+)/?$', 'index.php?gmr_event=$matches[1]', 'top' );
 	}
 
 	private static function register_artist_taxonomy(): void {
