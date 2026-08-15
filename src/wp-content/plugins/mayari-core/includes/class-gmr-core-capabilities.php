@@ -50,6 +50,10 @@ final class GMR_Core_Capabilities {
 				'edit_others_products'   => true,
 				'publish_products'       => true,
 				'read_private_products'  => true,
+				'list_users'             => true,
+				'create_users'           => true,
+				'edit_users'             => true,
+				'promote_users'          => true,
 			),
 			array_fill_keys( array_merge( self::READ_CAPS, self::MANAGE_CAPS ), true )
 		);
