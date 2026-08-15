@@ -71,3 +71,17 @@ La simulacion sobre las 131 obras produjo:
 Las tres advertencias de medidas no son fallos del parser. Los productos 5833, 6266 y 6278 tienen dos o mas medidas porque representan colecciones o productos variables. Deben descomponerse o revisarse como conjuntos antes de crear campos dimensionales canonicos.
 
 El simulador no modifico productos, terminos ni metadatos; el conteo final permanecio en 131.
+
+## Decisiones editoriales aprobadas
+
+- Sin disciplina: asignar `Sin disciplina`.
+- Sin ano: marcar la obra como no fechada.
+- Sin artista: asignar `Anonimo`.
+- Artista ambiguo: dejar la relacion de artista vacia.
+- Escultura y Joyeria simultaneas: prevalece `Joyeria`, por ser la clasificacion mas especifica.
+- Multiples medidas: usar el ultimo valor heredado y conservar la frase original.
+- Sin SKU: generar `GMR-LEGACY-{ID}`.
+- Sin imagen: usar el adjunto 2753 (`woocommerce-placeholder`).
+- Sin tecnica: asignar `Sin tecnica`.
+- Sin precio: conservar vacio y mostrar `Consultar`.
+- Productos variables heredados: conservar estructura, variaciones, SKU, imagenes y precios; el nuevo tema los mostrara en modo catalogo. Las obras nuevas se registraran como productos simples salvo necesidad editorial expresa.

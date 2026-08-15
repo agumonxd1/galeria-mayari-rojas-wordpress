@@ -84,25 +84,46 @@ final class GMR_Core_Migration_Preview {
 		$artists     = array_values( array_intersect( array_keys( $by_slug ), self::ARTISTS ) );
 		$collections = array_values( array_intersect( array_keys( $by_slug ), self::COLLECTIONS ) );
 		$year_raw    = self::attribute_text( $product_id, 'pa_ano' );
-		$measure_raw = self::attribute_text( $product_id, 'pa_medidas' );
+		$measure_values = self::attribute_values( $product_id, 'pa_medidas' );
+		$measure_raw = $measure_values ? (string) end( $measure_values ) : '';
 		$tech_raw    = self::attribute_text( $product_id, 'pa_tecnica' );
 		$year        = self::parse_year( $year_raw );
 		$dimensions  = self::parse_dimensions( $measure_raw );
 		$technical   = self::parse_technical( $tech_raw );
 		$warnings    = array();
+		$resolutions = array();
 
-		if ( 1 !== count( $artists ) ) $warnings[] = 0 === count( $artists ) ? 'artist_missing' : 'artist_ambiguous';
-		if ( 1 !== count( $disciplines ) ) $warnings[] = 0 === count( $disciplines ) ? 'discipline_missing' : 'discipline_ambiguous';
+		if ( 0 === count( $artists ) ) {
+			$artists = array( 'anonimo' );
+			$resolutions[] = 'artist_missing_to_anonymous';
+		} elseif ( count( $artists ) > 1 ) {
+			$artists = array();
+			$resolutions[] = 'artist_ambiguous_to_empty';
+		}
+		if ( 0 === count( $disciplines ) ) {
+			$disciplines = array( 'sin-disciplina' );
+			$resolutions[] = 'discipline_missing_to_none';
+		} elseif ( count( $disciplines ) > 1 ) {
+			$disciplines = array( 'joyeria' );
+			$resolutions[] = 'discipline_ambiguous_to_jewelry';
+		}
 		if ( '' !== $year_raw && empty( $year['parsed'] ) ) $warnings[] = 'year_unparsed';
-		if ( '' === $year_raw ) $warnings[] = 'year_missing';
+		if ( '' === $year_raw ) $resolutions[] = 'year_missing_to_undated';
 		if ( '' !== $measure_raw && empty( $dimensions['parsed'] ) ) $warnings[] = 'dimensions_unparsed';
-		if ( '' === $measure_raw ) $warnings[] = 'dimensions_missing';
-		if ( '' !== $tech_raw && empty( $technical['techniques'] ) && empty( $technical['materials'] ) ) $warnings[] = 'technique_unclassified';
-		if ( '' === $tech_raw ) $warnings[] = 'technique_missing';
-		if ( ! has_post_thumbnail( $product_id ) ) $warnings[] = 'image_missing';
-		if ( '' === (string) get_post_meta( $product_id, '_sku', true ) ) $warnings[] = 'sku_missing';
-		if ( '' === (string) get_post_meta( $product_id, '_price', true ) ) $warnings[] = 'price_missing';
-		if ( has_term( 'variable', 'product_type', $product_id ) ) $warnings[] = 'variable_product';
+		if ( count( $measure_values ) > 1 ) $resolutions[] = 'multiple_dimensions_use_last';
+		if ( '' === $measure_raw ) $resolutions[] = 'dimensions_missing_to_empty';
+		if ( '' !== $tech_raw && empty( $technical['techniques'] ) && empty( $technical['materials'] ) ) {
+			$technical['techniques'] = array( 'sin-tecnica' );
+			$resolutions[] = 'technique_unclassified_to_none';
+		}
+		if ( '' === $tech_raw ) {
+			$technical['techniques'] = array( 'sin-tecnica' );
+			$resolutions[] = 'technique_missing_to_none';
+		}
+		if ( ! has_post_thumbnail( $product_id ) ) $resolutions[] = 'image_missing_to_attachment_2753';
+		if ( '' === (string) get_post_meta( $product_id, '_sku', true ) ) $resolutions[] = 'sku_generated_gmr_legacy_' . $product_id;
+		if ( '' === (string) get_post_meta( $product_id, '_price', true ) ) $resolutions[] = 'price_missing_to_consult';
+		if ( has_term( 'variable', 'product_type', $product_id ) ) $resolutions[] = 'variable_product_preserved';
 
 		return array(
 			'id'          => $product_id,
@@ -117,6 +138,7 @@ final class GMR_Core_Migration_Preview {
 			'dimensions'  => $dimensions,
 			'tech_raw'    => $tech_raw,
 			'technical'   => $technical,
+			'resolutions' => $resolutions,
 			'warnings'    => array_values( array_unique( $warnings ) ),
 		);
 	}
@@ -170,8 +192,12 @@ final class GMR_Core_Migration_Preview {
 	}
 
 	private static function attribute_text( int $product_id, string $taxonomy ): string {
+		return implode( ' | ', self::attribute_values( $product_id, $taxonomy ) );
+	}
+
+	private static function attribute_values( int $product_id, string $taxonomy ): array {
 		$terms = wp_get_post_terms( $product_id, $taxonomy, array( 'fields' => 'names' ) );
-		return is_wp_error( $terms ) ? '' : implode( ' | ', $terms );
+		return is_wp_error( $terms ) ? array() : $terms;
 	}
 
 	private static function summarize( array $plans, int $catalog_total ): array {
@@ -196,11 +222,12 @@ final class GMR_Core_Migration_Preview {
 			'techniques' => implode( '|', $plan['technical']['techniques'] ),
 			'supports' => implode( '|', $plan['technical']['supports'] ),
 			'materials' => implode( '|', $plan['technical']['materials'] ),
+			'resolutions' => implode( '|', $plan['resolutions'] ),
 			'warnings' => implode( '|', $plan['warnings'] ),
 		);
 	}
 
 	private static function empty_plan(): array {
-		return array( 'id' => 0, 'title' => '', 'status' => '', 'artist' => '', 'discipline' => '', 'collections' => array(), 'year_raw' => '', 'year' => array( 'parsed' => false, 'start' => null, 'end' => null ), 'measure_raw' => '', 'dimensions' => array( 'parsed' => false ), 'tech_raw' => '', 'technical' => array( 'techniques' => array(), 'supports' => array(), 'materials' => array() ), 'warnings' => array() );
+		return array( 'id' => 0, 'title' => '', 'status' => '', 'artist' => '', 'discipline' => '', 'collections' => array(), 'year_raw' => '', 'year' => array( 'parsed' => false, 'start' => null, 'end' => null ), 'measure_raw' => '', 'dimensions' => array( 'parsed' => false ), 'tech_raw' => '', 'technical' => array( 'techniques' => array(), 'supports' => array(), 'materials' => array() ), 'resolutions' => array(), 'warnings' => array() );
 	}
 }
