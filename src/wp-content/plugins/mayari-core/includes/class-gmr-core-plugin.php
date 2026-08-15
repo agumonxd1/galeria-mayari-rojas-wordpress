@@ -25,11 +25,13 @@ final class GMR_Core_Plugin {
 
 	public function boot(): void {
 		load_plugin_textdomain( 'mayari-core', false, dirname( plugin_basename( GMR_CORE_FILE ) ) . '/languages' );
+		add_action( 'init', array( 'GMR_Core_Capabilities', 'maybe_upgrade' ), 1 );
 
 		GMR_Core_Content::register_hooks();
 		GMR_Core_Meta::register_hooks();
 		GMR_Core_Access::register_hooks();
 		GMR_Core_Admin_Artwork::register_hooks();
+		GMR_Core_Admin_Terms::register_hooks();
 
 		if ( class_exists( 'WooCommerce' ) ) {
 			GMR_Core_Catalog::register_hooks();

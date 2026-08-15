@@ -88,6 +88,57 @@ final class GMR_Core_Meta {
 
 		self::register_shared_visibility( 'gmr_event' );
 		self::register_shared_visibility( 'gmr_media_gallery' );
+		self::register_term_meta();
+	}
+
+	private static function register_term_meta(): void {
+		$artist = array(
+			'gmr_artist_biography'        => array( 'string', 'wp_kses_post' ),
+			'gmr_artist_history'          => array( 'string', 'wp_kses_post' ),
+			'gmr_artist_portrait_id'      => array( 'integer', 'absint' ),
+			'gmr_artist_cover_id'         => array( 'integer', 'absint' ),
+			'gmr_artist_featured'         => array( 'boolean', 'rest_sanitize_boolean' ),
+			'gmr_artist_special_template'=> array( 'string', array( self::class, 'sanitize_artist_template' ) ),
+			'gmr_artist_order'            => array( 'integer', 'intval' ),
+		);
+
+		$collection = array(
+			'gmr_collection_subtitle'   => array( 'string', 'sanitize_text_field' ),
+			'gmr_collection_year_start' => array( 'integer', 'absint' ),
+			'gmr_collection_year_end'   => array( 'integer', 'absint' ),
+			'gmr_collection_text'       => array( 'string', 'wp_kses_post' ),
+			'gmr_collection_cover_id'   => array( 'integer', 'absint' ),
+			'gmr_collection_artists'    => array( 'array', array( self::class, 'sanitize_term_ids' ) ),
+			'gmr_visibility'            => array( 'string', array( self::class, 'sanitize_visibility' ) ),
+			'gmr_collection_order'      => array( 'integer', 'intval' ),
+		);
+
+		self::register_taxonomy_meta_group( 'gmr_artist', $artist, 'gmr_manage_artists' );
+		self::register_taxonomy_meta_group( 'gmr_collection', $collection, 'gmr_manage_collections' );
+	}
+
+	private static function register_taxonomy_meta_group( string $taxonomy, array $fields, string $capability ): void {
+		foreach ( $fields as $key => $definition ) {
+			register_term_meta( $taxonomy, $key, array(
+				'type'              => $definition[0],
+				'single'            => true,
+				'show_in_rest'      => false,
+				'sanitize_callback' => $definition[1],
+				'auth_callback'     => static fn() => current_user_can( $capability ),
+			) );
+		}
+	}
+
+	public static function sanitize_artist_template( mixed $value ): string {
+		return 'elmar' === $value ? 'elmar' : '';
+	}
+
+	public static function sanitize_visibility( mixed $value ): string {
+		return in_array( $value, array( 'public', 'collectors', 'hidden' ), true ) ? $value : 'public';
+	}
+
+	public static function sanitize_term_ids( mixed $value ): array {
+		return array_values( array_unique( array_filter( array_map( 'absint', (array) $value ) ) ) );
 	}
 
 	private static function register_product_meta( string $key, string $type, callable|string $sanitize ): void {
@@ -141,4 +192,3 @@ final class GMR_Core_Meta {
 		return current_user_can( 'gmr_manage_artworks' ) || current_user_can( 'manage_woocommerce' );
 	}
 }
-

@@ -32,6 +32,7 @@ final class GMR_Core_Content {
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
 				'hierarchical'      => false,
+				'capabilities'      => self::taxonomy_capabilities( 'gmr_manage_artists', 'gmr_manage_artworks' ),
 				'rewrite'           => array( 'slug' => 'artistas', 'with_front' => false ),
 			),
 		);
@@ -48,6 +49,7 @@ final class GMR_Core_Content {
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
 				'hierarchical'      => false,
+				'capabilities'      => self::taxonomy_capabilities( 'gmr_manage_collections', 'gmr_manage_artworks' ),
 				'rewrite'           => array( 'slug' => 'colecciones', 'with_front' => false ),
 			),
 		);
@@ -72,6 +74,7 @@ final class GMR_Core_Content {
 					'show_admin_column' => true,
 					'show_in_rest'      => true,
 					'hierarchical'      => false,
+					'capabilities'      => self::taxonomy_capabilities( 'gmr_manage_artworks', 'gmr_manage_artworks' ),
 				),
 			);
 		}
@@ -131,6 +134,15 @@ final class GMR_Core_Content {
 		);
 	}
 
+	private static function taxonomy_capabilities( string $manage, string $assign ): array {
+		return array(
+			'manage_terms' => $manage,
+			'edit_terms'   => $manage,
+			'delete_terms' => $manage,
+			'assign_terms' => $assign,
+		);
+	}
+
 	private static function post_type_labels( string $singular, string $plural ): array {
 		return array(
 			'name'          => $plural,
@@ -144,4 +156,3 @@ final class GMR_Core_Content {
 		);
 	}
 }
-

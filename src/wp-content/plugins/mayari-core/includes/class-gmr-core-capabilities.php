@@ -55,6 +55,12 @@ final class GMR_Core_Capabilities {
 		);
 
 		add_role( 'gmr_gallery_manager', __( 'Gestor de galeria', 'mayari-core' ), $manager_caps );
+		$manager = get_role( 'gmr_gallery_manager' );
+		if ( $manager ) {
+			foreach ( $manager_caps as $capability => $grant ) {
+				$manager->add_cap( $capability, $grant );
+			}
+		}
 
 		$administrator = get_role( 'administrator' );
 		if ( $administrator ) {
@@ -64,7 +70,13 @@ final class GMR_Core_Capabilities {
 		}
 
 		GMR_Core_Content::register_content();
+		update_option( 'gmr_core_version', GMR_CORE_VERSION );
 		flush_rewrite_rules();
 	}
-}
 
+	public static function maybe_upgrade(): void {
+		if ( GMR_CORE_VERSION !== get_option( 'gmr_core_version' ) ) {
+			self::activate();
+		}
+	}
+}

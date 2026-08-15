@@ -1,0 +1,5 @@
+.gmr-media-preview img { display:block; width:120px; height:120px; margin:0 0 10px; object-fit:cover; }
+.gmr-media-field .button-link-delete { margin-left:8px; }
+.form-field textarea { width:95%; }
+.column-gmr_image { width:70px; }
+.column-gmr_image img { width:48px; height:48px; object-fit:cover; }
