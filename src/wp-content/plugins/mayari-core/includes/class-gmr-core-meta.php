@@ -119,11 +119,12 @@ final class GMR_Core_Meta {
 
 	private static function register_taxonomy_meta_group( string $taxonomy, array $fields, string $capability ): void {
 		foreach ( $fields as $key => $definition ) {
+			$sanitize = $definition[1];
 			register_term_meta( $taxonomy, $key, array(
 				'type'              => $definition[0],
 				'single'            => true,
 				'show_in_rest'      => false,
-				'sanitize_callback' => $definition[1],
+				'sanitize_callback' => static fn( $value ) => call_user_func( $sanitize, $value ),
 				'auth_callback'     => static fn() => current_user_can( $capability ),
 			) );
 		}
