@@ -119,6 +119,18 @@ final class GMR_Core_Content {
 				'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
 			),
 		);
+
+		register_taxonomy(
+			'gmr_media_topic',
+			array( 'gmr_media_gallery' ),
+			array(
+				'labels'       => self::taxonomy_labels( 'Tema multimedia', 'Temas multimedia' ),
+				'public'       => true,
+				'show_in_rest' => true,
+				'hierarchical' => true,
+				'rewrite'      => array( 'slug' => 'archivo-multimedia/tema', 'with_front' => false ),
+			)
+		);
 	}
 
 	private static function taxonomy_labels( string $singular, string $plural ): array {

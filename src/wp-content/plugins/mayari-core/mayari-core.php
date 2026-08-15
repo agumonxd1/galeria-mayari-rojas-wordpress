@@ -3,7 +3,7 @@
  * Plugin Name: Mayari Core
  * Plugin URI:  https://galeriamayarirojas.com/
  * Description: Catalogo, artistas, colecciones, privacidad y herramientas editoriales de Galeria Mayari Rojas.
- * Version:     0.5.1
+ * Version:     0.6.0
  * Requires at least: 6.7
  * Requires PHP: 8.1
  * Author:      Galeria Mayari Rojas
@@ -14,7 +14,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GMR_CORE_VERSION', '0.5.1' );
+define( 'GMR_CORE_VERSION', '0.6.0' );
 define( 'GMR_CORE_FILE', __FILE__ );
 define( 'GMR_CORE_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -25,6 +25,7 @@ require_once GMR_CORE_PATH . 'includes/class-gmr-core-access.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-catalog.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-admin-artwork.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-admin-terms.php';
+require_once GMR_CORE_PATH . 'includes/class-gmr-core-admin-editorial.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-migration-preview.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-migration.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-plugin.php';

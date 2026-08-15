@@ -32,6 +32,7 @@ final class GMR_Core_Plugin {
 		GMR_Core_Access::register_hooks();
 		GMR_Core_Admin_Artwork::register_hooks();
 		GMR_Core_Admin_Terms::register_hooks();
+		GMR_Core_Admin_Editorial::register_hooks();
 		GMR_Core_Migration_Preview::register_hooks();
 		GMR_Core_Migration::register_hooks();
 
