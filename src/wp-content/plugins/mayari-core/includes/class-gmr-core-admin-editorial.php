@@ -41,6 +41,11 @@ final class GMR_Core_Admin_Editorial {
 		self::field( $post, 'gmr_media_credits', 'Creditos y derechos' );
 		self::field( $post, 'gmr_media_ids', 'Imagenes seleccionadas' );
 		echo '<p><button type="button" class="button" id="gmr-select-media">Seleccionar u ordenar imagenes</button></p><div id="gmr-media-preview"></div><p class="description">Use la imagen destacada como portada. El selector conserva el orden elegido.</p>';
+		$selected_events = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $post->ID, 'gmr_media_events', true ) ) ) );
+		$events = get_posts( array( 'post_type' => 'gmr_event', 'post_status' => array( 'publish', 'draft' ), 'posts_per_page' => -1, 'orderby' => 'date', 'order' => 'DESC' ) );
+		echo '<p><label for="gmr_media_events"><strong>Eventos relacionados</strong></label><br><select class="widefat" id="gmr_media_events" name="gmr_media_events[]" multiple size="6">';
+		foreach ( $events as $event ) printf( '<option value="%d" %s>%s</option>', $event->ID, selected( in_array( $event->ID, $selected_events, true ), true, false ), esc_html( $event->post_title ) );
+		echo '</select></p><p class="description">Use Ctrl o Cmd para seleccionar varios eventos.</p>';
 		self::select( $post, 'gmr_visibility', 'Visibilidad', array( 'public' => 'Publico', 'collectors' => 'Coleccionistas', 'hidden' => 'Oculto' ) );
 	}
 	public static function tribute_box( WP_Post $post ): void {
@@ -65,7 +70,7 @@ final class GMR_Core_Admin_Editorial {
 	}
 
 	public static function save_event( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_event_start', 'gmr_event_end', 'gmr_event_venue', 'gmr_event_address', 'gmr_event_modality', 'gmr_event_status', 'gmr_event_registration', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_event_all_day', isset( $_POST['gmr_event_all_day'] ) ); }
-	public static function save_media( int $post_id ): void { self::save( $post_id, array( 'gmr_media_date_label', 'gmr_media_credits', 'gmr_media_ids', 'gmr_visibility' ) ); }
+	public static function save_media( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_media_date_label', 'gmr_media_credits', 'gmr_media_ids', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_media_events', implode( ',', array_filter( array_map( 'absint', (array) ( $_POST['gmr_media_events'] ?? array() ) ) ) ) ); }
 	public static function save_tribute( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_tribute_author', 'gmr_tribute_role', 'gmr_tribute_source', 'gmr_tribute_date', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_tribute_featured', isset( $_POST['gmr_tribute_featured'] ) ); }
 	private static function save( int $post_id, array $keys ): bool {
 		if ( ! isset( $_POST['gmr_editorial_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_editorial_nonce'] ) ), 'gmr_editorial_save' ) || ! current_user_can( 'edit_post', $post_id ) ) return false;

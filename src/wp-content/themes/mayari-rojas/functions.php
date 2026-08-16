@@ -35,6 +35,10 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_script( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.js', array(), wp_get_theme()->get( 'Version' ), true );
 	}
+	if ( is_post_type_archive('gmr_media_gallery') || is_tax('gmr_media_topic') || is_singular('gmr_media_gallery') ) {
+		wp_enqueue_style( 'gmr-multimedia', get_template_directory_uri() . '/assets/multimedia.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_script( 'gmr-multimedia', get_template_directory_uri() . '/assets/multimedia.js', array(), wp_get_theme()->get( 'Version' ), true );
+	}
 	wp_enqueue_script( 'gmr-theme', get_template_directory_uri() . '/assets/theme.js', array(), wp_get_theme()->get( 'Version' ), true );
 } );
 
@@ -97,6 +101,7 @@ function gmr_theme_visibility_meta_query(): array {
 	return class_exists( 'GMR_Core_Access' ) ? GMR_Core_Access::visibility_meta_query() : array( 'relation'=>'OR', array( 'key'=>'gmr_visibility','value'=>'public' ), array( 'key'=>'gmr_visibility','compare'=>'NOT EXISTS' ) );
 }
 function gmr_theme_can_view_term( int $term_id ): bool { return ! class_exists( 'GMR_Core_Access' ) || GMR_Core_Access::can_view_term( $term_id ); }
+function gmr_theme_can_view_post( int $post_id ): bool { return ! class_exists( 'GMR_Core_Access' ) || GMR_Core_Access::can_view( $post_id ); }
 function gmr_theme_visible_work_count( string $taxonomy, int $term_id ): int {
 	$query = new WP_Query( array( 'post_type'=>'product', 'post_status'=>'publish', 'fields'=>'ids', 'posts_per_page'=>1, 'no_found_rows'=>false, 'tax_query'=>array( array( 'taxonomy'=>$taxonomy, 'field'=>'term_id', 'terms'=>$term_id ) ), 'meta_query'=>array( gmr_theme_visibility_meta_query() ) ) );
 	return (int) $query->found_posts;
@@ -117,6 +122,8 @@ function gmr_theme_event_types( int $post_id ): string {
 function gmr_theme_event_is_upcoming(int $post_id):bool{$status=get_post_meta($post_id,'gmr_event_status',true);if(in_array($status,array('upcoming','ongoing'),true))return true;if(in_array($status,array('finished','cancelled'),true))return false;$end=get_post_meta($post_id,'gmr_event_end',true);$start=get_post_meta($post_id,'gmr_event_start',true);$timestamp=strtotime($end?:$start);return$timestamp&&$timestamp>=current_time('timestamp');}
 function gmr_theme_event_date_parts(int $post_id):array{$value=get_post_meta($post_id,'gmr_event_start',true);$timestamp=$value?strtotime($value):false;if(!$timestamp)return array('day'=>'','month'=>'','year'=>'','time'=>'');$all_day=(bool)get_post_meta($post_id,'gmr_event_all_day',true);return array('day'=>wp_date('d',$timestamp),'month'=>wp_date('M',$timestamp),'year'=>wp_date('Y',$timestamp),'time'=>$all_day?'':wp_date('H:i',$timestamp));}
 function gmr_theme_event_status_label(int $post_id):string{$status=get_post_meta($post_id,'gmr_event_status',true);$labels=array('upcoming'=>'Próximo','ongoing'=>'En curso','finished'=>'Finalizado','cancelled'=>'Cancelado');return$labels[$status]??(gmr_theme_event_is_upcoming($post_id)?'Próximo':'Archivo');}
+function gmr_theme_media_ids(int $post_id):array{return array_values(array_unique(array_filter(array_map('absint',explode(',',(string)get_post_meta($post_id,'gmr_media_ids',true))))));}
+function gmr_theme_media_topics(int $post_id):string{return gmr_theme_term_names($post_id,'gmr_media_topic');}
 function gmr_theme_commercial_labels():array{return array('available'=>'Disponible','reserved'=>'Reservada','sold'=>'Vendida','not_available'=>'No disponible','on_exhibition'=>'En exposición','archive'=>'Archivo');}
 function gmr_theme_commercial_label(string $status):string{$labels=gmr_theme_commercial_labels();return$labels[$status]??ucfirst(str_replace('_',' ',$status));}
 function gmr_theme_edition_label(int $post_id):string{$number=trim((string)get_post_meta($post_id,'gmr_edition_number',true));$size=trim((string)get_post_meta($post_id,'gmr_edition_size',true));if($number&&$size)return$number.' de '.$size;if($number)return$number;if($size)return'Tiraje de '.$size;return'';}

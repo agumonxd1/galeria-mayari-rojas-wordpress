@@ -107,6 +107,7 @@ final class GMR_Core_Meta {
 			'gmr_media_date_label' => 'sanitize_text_field',
 			'gmr_media_credits'    => 'sanitize_textarea_field',
 			'gmr_media_ids'        => array( self::class, 'sanitize_attachment_ids' ),
+			'gmr_media_events'     => array( self::class, 'sanitize_attachment_ids' ),
 		);
 		$tribute_fields = array(
 			'gmr_tribute_author' => 'sanitize_text_field',

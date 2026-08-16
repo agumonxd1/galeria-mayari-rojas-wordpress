@@ -1,1 +1,19 @@
-<?php get_header();the_post();$ids=array_filter(array_map('absint',explode(',',get_post_meta(get_the_ID(),'gmr_media_ids',true))));?><article class="gmr-wrap gmr-single-story"><header class="gmr-single-story__head"><span class="gmr-kicker">Archivo multimedia · <?php echo esc_html(get_post_meta(get_the_ID(),'gmr_media_date_label',true));?></span><h1><?php the_title();?></h1><?php if(has_excerpt()):?><p><?php echo esc_html(get_the_excerpt());?></p><?php endif;?></header><?php the_post_thumbnail('full',array('class'=>'gmr-single-story__cover'));?><div class="gmr-single-story__content"><?php the_content();?></div><?php if($ids):?><div class="gmr-media-masonry"><?php foreach($ids as $image_id) echo wp_get_attachment_image($image_id,'large');?></div><?php endif;?><div class="gmr-single-story__content"><p><?php echo esc_html(get_post_meta(get_the_ID(),'gmr_media_credits',true));?></p></div></article><?php get_footer();?>
+<?php
+get_header(); the_post(); $id = get_the_ID(); $ids = gmr_theme_media_ids( $id );
+$period = get_post_meta( $id, 'gmr_media_date_label', true ); $credits = get_post_meta( $id, 'gmr_media_credits', true );
+$event_ids = array_filter( array_map( 'absint', explode( ',', (string) get_post_meta( $id, 'gmr_media_events', true ) ) ) );
+$artists = wp_get_post_terms( $id, 'gmr_artist' ); $collections = wp_get_post_terms( $id, 'gmr_collection' );
+$artists = is_wp_error( $artists ) ? array() : $artists; $collections = is_wp_error( $collections ) ? array() : $collections;
+?>
+<article class="gmr-media-single">
+<header class="gmr-media-hero"><div class="gmr-media-hero__image"><?php the_post_thumbnail( 'full' ); ?><i aria-hidden="true"></i></div><div class="gmr-wrap gmr-media-hero__content">
+	<a href="<?php echo esc_url( get_post_type_archive_link( 'gmr_media_gallery' ) ); ?>">← Volver al archivo</a>
+	<div><span class="gmr-kicker"><?php echo esc_html( gmr_theme_media_topics( $id ) ?: 'Archivo multimedia' ); ?><?php echo $period ? ' · ' . esc_html( $period ) : ''; ?></span><h1><?php the_title(); ?></h1><?php if ( has_excerpt() ) : ?><p><?php echo esc_html( get_the_excerpt() ); ?></p><?php endif; ?></div>
+	<span class="gmr-media-hero__count"><?php echo esc_html( count( $ids ) ); ?> imágenes</span>
+</div></header>
+<?php if ( get_the_content() || $artists || $collections || $event_ids ) : ?><section class="gmr-media-story"><div class="gmr-wrap"><div><span class="gmr-kicker">Contexto</span><h2>Sobre este archivo</h2></div><div class="gmr-media-story__body"><?php the_content(); ?>
+	<?php if ( $artists || $collections || $event_ids ) : ?><div class="gmr-media-relations"><?php foreach ( $artists as $artist ) : ?><a href="<?php echo esc_url( gmr_theme_artist_url( $artist ) ); ?>">Artista · <?php echo esc_html( $artist->name ); ?></a><?php endforeach; ?><?php foreach ( $collections as $collection ) : ?><a href="<?php echo esc_url( get_term_link( $collection ) ); ?>">Colección · <?php echo esc_html( $collection->name ); ?></a><?php endforeach; ?><?php foreach ( $event_ids as $event_id ) : if ( 'publish' !== get_post_status( $event_id ) || ! gmr_theme_can_view_post( $event_id ) ) continue; ?><a href="<?php echo esc_url( get_permalink( $event_id ) ); ?>">Agenda · <?php echo esc_html( get_the_title( $event_id ) ); ?></a><?php endforeach; ?></div><?php endif; ?>
+</div></div></section><?php endif; ?>
+<?php if ( $ids ) : ?><section class="gmr-media-gallery"><div class="gmr-wrap"><div class="gmr-media-gallery__head"><span class="gmr-kicker">Recorrido visual</span><span><?php echo esc_html( count( $ids ) ); ?> imágenes</span></div><div class="gmr-media-masonry"><?php foreach ( $ids as $image_id ) echo wp_get_attachment_image( $image_id, 'large', false, array( 'loading' => 'lazy' ) ); ?></div><?php if ( $credits ) : ?><p class="gmr-media-credits"><span>Créditos y derechos</span><?php echo esc_html( $credits ); ?></p><?php endif; ?></div></section><?php endif; ?>
+</article>
+<?php get_footer(); ?>
