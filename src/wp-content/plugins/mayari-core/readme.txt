@@ -2,7 +2,7 @@
 Contributors: galeria-mayari-rojas
 Requires at least: 6.7
 Requires PHP: 8.1
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 License: Proprietary
 
 Plugin funcional del catalogo de Galeria Mayari Rojas.
@@ -12,6 +12,10 @@ Plugin funcional del catalogo de Galeria Mayari Rojas.
 Registra artistas, colecciones, datos especializados de obras, roles de Coleccionistas y modo catalogo para WooCommerce.
 
 == Changelog ==
+
+= 1.5.1 =
+* Artistas y Colecciones tienen una unica entrada principal en la administracion.
+* Se eliminan sus enlaces duplicados de Agenda y Archivo multimedia.
 
 = 1.5.0 =
 * Relaciones editables entre galerias multimedia y eventos de Agenda.

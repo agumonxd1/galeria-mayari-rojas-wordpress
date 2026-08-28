@@ -11,6 +11,35 @@ final class GMR_Core_Content {
 
 	public static function register_hooks(): void {
 		add_action( 'init', array( self::class, 'register_content' ), 5 );
+		add_action( 'admin_menu', array( self::class, 'register_editorial_menus' ), 20 );
+	}
+
+	/**
+	 * Give the two central catalog entities a single, predictable home.
+	 *
+	 * WordPress otherwise repeats shared taxonomies below every post type to
+	 * which they are attached (Agenda, Multimedia, Products, etc.).
+	 */
+	public static function register_editorial_menus(): void {
+		add_menu_page(
+			'Artistas',
+			'Artistas',
+			'gmr_manage_artists',
+			'edit-tags.php?taxonomy=gmr_artist',
+			'',
+			'dashicons-art',
+			25
+		);
+
+		add_menu_page(
+			'Colecciones',
+			'Colecciones',
+			'gmr_manage_collections',
+			'edit-tags.php?taxonomy=gmr_collection',
+			'',
+			'dashicons-portfolio',
+			26
+		);
 	}
 
 	public static function register_content(): void {
@@ -33,6 +62,7 @@ final class GMR_Core_Content {
 				'labels'            => self::taxonomy_labels( 'Artista', 'Artistas' ),
 				'public'            => true,
 				'show_ui'           => true,
+				'show_in_menu'      => false,
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
 				'hierarchical'      => false,
@@ -50,6 +80,7 @@ final class GMR_Core_Content {
 				'labels'            => self::taxonomy_labels( 'Coleccion', 'Colecciones' ),
 				'public'            => true,
 				'show_ui'           => true,
+				'show_in_menu'      => false,
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
 				'hierarchical'      => false,
