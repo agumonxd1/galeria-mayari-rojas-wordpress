@@ -62,10 +62,21 @@ add_action( 'pre_get_posts', function( WP_Query $query ) {
 	if ( $query->is_post_type_archive( 'product' ) || $query->is_tax( array( 'product_cat', 'gmr_artist', 'gmr_collection' ) ) ) {
 		$query->set( 'posts_per_page', 18 );
 		$query->set( 'post_type', 'product' );
+		$can_view_private = current_user_can( 'gmr_view_collector_catalog' ) || current_user_can( 'gmr_manage_artworks' );
+		if ( ! $can_view_private ) {
+			$meta_query = (array) $query->get( 'meta_query', array() );
+			$meta_query[] = array( 'key'=>'gmr_commercial_status', 'value'=>array( 'available','on_exhibition' ), 'compare'=>'IN' );
+			$query->set( 'meta_query', $meta_query );
+		}
 		if ( ! empty( $_GET['artista'] ) ) {
 			$query->set( 'tax_query', array( array( 'taxonomy' => 'gmr_artist', 'field' => 'slug', 'terms' => sanitize_title( wp_unslash( $_GET['artista'] ) ) ) ) );
 		}
-		if ( ! empty( $_GET['estado'] ) ) {
+		if ( $can_view_private && ! empty( $_GET['disciplina'] ) ) {
+			$tax_query = (array) $query->get( 'tax_query', array() );
+			$tax_query[] = array( 'taxonomy'=>'product_cat', 'field'=>'slug', 'terms'=>sanitize_title( wp_unslash( $_GET['disciplina'] ) ) );
+			$query->set( 'tax_query', $tax_query );
+		}
+		if ( $can_view_private && ! empty( $_GET['estado'] ) ) {
 			$query->set( 'meta_query', array( gmr_theme_visibility_meta_query(), array( 'key' => 'gmr_commercial_status', 'value' => sanitize_key( wp_unslash( $_GET['estado'] ) ) ) ) );
 		}
 	}
