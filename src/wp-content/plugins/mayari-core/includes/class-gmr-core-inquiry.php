@@ -26,7 +26,7 @@ final class GMR_Core_Inquiry {
 		$status = isset( $_GET['consulta'] ) ? sanitize_key( wp_unslash( $_GET['consulta'] ) ) : '';
 		$started = time();
 		ob_start(); ?>
-		<section class="gmr-inquiry" id="consultar"><div class="gmr-inquiry__intro"><span class="gmr-kicker">Consulta privada</span><h2>Conversemos<br>sobre esta obra.</h2><p>Solicite disponibilidad, precio o información adicional. La galería responderá personalmente a su consulta.</p></div><div class="gmr-inquiry__panel">
+		<section class="gmr-inquiry" id="consultar"><div class="gmr-inquiry__intro"><span class="gmr-kicker">Consulta privada</span><h2>Conversemos<br> sobre esta obra.</h2><p>Solicite disponibilidad, precio o información adicional. La galería responderá personalmente a su consulta.</p></div><div class="gmr-inquiry__panel">
 		<?php if ( 'enviada' === $status ) : ?><div class="gmr-form-notice gmr-form-notice--success" role="status">Gracias. Su consulta fue recibida correctamente.</div><?php elseif ( 'error' === $status ) : ?><div class="gmr-form-notice" role="alert">No pudimos enviar la consulta. Revise los campos e intente nuevamente.</div><?php endif; ?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="gmr_submit_inquiry"><input type="hidden" name="product_id" value="<?php echo esc_attr( $product_id ); ?>"><input type="hidden" name="started" value="<?php echo esc_attr( $started ); ?>"><input type="hidden" name="started_token" value="<?php echo esc_attr( wp_hash( $product_id . '|' . $started ) ); ?>"><?php wp_nonce_field( 'gmr_inquiry_' . $product_id, 'gmr_inquiry_nonce' ); ?>
