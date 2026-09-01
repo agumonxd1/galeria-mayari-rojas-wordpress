@@ -26,17 +26,17 @@ final class GMR_Core_Inquiry {
 		$status = isset( $_GET['consulta'] ) ? sanitize_key( wp_unslash( $_GET['consulta'] ) ) : '';
 		$started = time();
 		ob_start(); ?>
-		<section class="gmr-inquiry" id="consultar"><span class="gmr-kicker">Consulta privada</span><h2>Solicitar informacion</h2><p>Pregunte por disponibilidad, precio o detalles de esta obra. La galeria respondera directamente.</p>
+		<section class="gmr-inquiry" id="consultar"><div class="gmr-inquiry__intro"><span class="gmr-kicker">Consulta privada</span><h2>Conversemos<br>sobre esta obra.</h2><p>Solicite disponibilidad, precio o información adicional. La galería responderá personalmente a su consulta.</p></div><div class="gmr-inquiry__panel">
 		<?php if ( 'enviada' === $status ) : ?><div class="gmr-form-notice gmr-form-notice--success" role="status">Gracias. Su consulta fue recibida correctamente.</div><?php elseif ( 'error' === $status ) : ?><div class="gmr-form-notice" role="alert">No pudimos enviar la consulta. Revise los campos e intente nuevamente.</div><?php endif; ?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 			<input type="hidden" name="action" value="gmr_submit_inquiry"><input type="hidden" name="product_id" value="<?php echo esc_attr( $product_id ); ?>"><input type="hidden" name="started" value="<?php echo esc_attr( $started ); ?>"><input type="hidden" name="started_token" value="<?php echo esc_attr( wp_hash( $product_id . '|' . $started ) ); ?>"><?php wp_nonce_field( 'gmr_inquiry_' . $product_id, 'gmr_inquiry_nonce' ); ?>
-			<?php $artist_names=wp_get_post_terms($product_id,'gmr_artist',array('fields'=>'names'));$artist_label=is_wp_error($artist_names)?'':implode(', ',$artist_names);?><div class="gmr-inquiry__reference"><strong><?php echo esc_html( get_the_title( $product_id ) ); ?></strong><span><?php echo esc_html( $artist_label ); ?> · <?php echo esc_html( $product ? $product->get_sku() : '' ); ?></span></div>
-			<div class="gmr-form-grid"><label>Nombre completo<input required name="name" autocomplete="name"></label><label>Correo electronico<input required type="email" name="email" autocomplete="email"></label><label>Telefono opcional<input type="tel" name="phone" autocomplete="tel"></label></div>
-			<label>Mensaje<textarea required name="message" rows="5">Me interesa recibir informacion sobre esta obra.</textarea></label>
+			<?php $artist_names=wp_get_post_terms($product_id,'gmr_artist',array('fields'=>'names'));$artist_label=is_wp_error($artist_names)?'':implode(', ',$artist_names);?><div class="gmr-inquiry__reference"><span>Obra consultada</span><strong><?php echo esc_html( get_the_title( $product_id ) ); ?></strong><small><?php echo esc_html( $artist_label ); ?><?php echo $product&&$product->get_sku()?' · Ref. '.esc_html($product->get_sku()):'';?></small></div>
+			<div class="gmr-form-grid"><label><span>Nombre completo</span><input required name="name" autocomplete="name" placeholder="Su nombre"></label><label><span>Correo electrónico</span><input required type="email" name="email" autocomplete="email" placeholder="nombre@correo.com"></label><label><span>Teléfono <em>opcional</em></span><input type="tel" name="phone" autocomplete="tel" placeholder="+502 0000 0000"></label></div>
+			<label class="gmr-message-field"><span>¿Cómo podemos ayudarle?</span><textarea required name="message" rows="5">Me interesa recibir información sobre esta obra.</textarea></label>
 			<label class="gmr-honeypot" aria-hidden="true">Sitio web<input name="website" tabindex="-1" autocomplete="off"></label>
-			<label class="gmr-consent"><input required type="checkbox" name="consent" value="1"> Acepto que la galeria utilice estos datos para responder mi consulta.</label>
-			<button class="gmr-button" type="submit">Enviar consulta</button>
-		</form></section><?php return ob_get_clean();
+			<div class="gmr-inquiry__actions"><label class="gmr-consent"><input required type="checkbox" name="consent" value="1"><span>Acepto que la galería utilice estos datos únicamente para responder mi consulta.</span></label>
+			<button class="gmr-button" type="submit">Enviar consulta</button></div>
+		</form></div></section><?php return ob_get_clean();
 	}
 
 	public static function submit(): void {

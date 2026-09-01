@@ -37,6 +37,7 @@ final class GMR_Core_Plugin {
 		GMR_Core_Institution::register_hooks();
 		GMR_Core_Collectors::register_hooks();
 		GMR_Core_Documents::register_hooks();
+		GMR_Core_Artwork_Images::register_hooks();
 		GMR_Core_Migration_Preview::register_hooks();
 		GMR_Core_Migration::register_hooks();
 

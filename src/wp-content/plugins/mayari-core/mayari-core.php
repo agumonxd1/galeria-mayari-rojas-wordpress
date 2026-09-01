@@ -30,6 +30,7 @@ require_once GMR_CORE_PATH . 'includes/class-gmr-core-inquiry.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-institution.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-collectors.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-documents.php';
+require_once GMR_CORE_PATH . 'includes/class-gmr-core-artwork-images.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-migration-preview.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-migration.php';
 require_once GMR_CORE_PATH . 'includes/class-gmr-core-plugin.php';
