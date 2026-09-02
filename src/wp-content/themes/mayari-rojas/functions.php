@@ -35,7 +35,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_script( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.js', array(), wp_get_theme()->get( 'Version' ), true );
 	}
-	if ( is_post_type_archive('gmr_media_gallery') || is_tax('gmr_media_topic') || is_singular('gmr_media_gallery') ) {
+	if ( is_post_type_archive('gmr_media_gallery') || is_tax('gmr_media_topic') || is_singular('gmr_media_gallery') || is_page('elmar-rojas') ) {
 		wp_enqueue_style( 'gmr-multimedia', get_template_directory_uri() . '/assets/multimedia.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_script( 'gmr-multimedia', get_template_directory_uri() . '/assets/multimedia.js', array(), wp_get_theme()->get( 'Version' ), true );
 	}

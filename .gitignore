@@ -1,6 +1,7 @@
 # Local and generated files
 tmp/
 output/
+work/
 .DS_Store
 Thumbs.db
 
