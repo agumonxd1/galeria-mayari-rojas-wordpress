@@ -48,4 +48,5 @@ coverage/
 # Editor settings
 .idea/
 .vscode/
+.codex-remote-attachments/
 *.swp
