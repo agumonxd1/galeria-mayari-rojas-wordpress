@@ -9,6 +9,8 @@ final class GMR_Core_Collectors {
 	public static function register_hooks(): void {
 		add_filter( 'authenticate', array( self::class, 'block_inactive_login' ), 35, 3 );
 		add_action( 'wp_login', array( self::class, 'record_login' ), 10, 2 );
+		add_action( 'template_redirect', array( self::class, 'handle_frontend_access' ), -5 );
+		add_filter( 'retrieve_password_message', array( self::class, 'collector_reset_message' ), 10, 4 );
 		add_action( 'template_redirect', array( self::class, 'private_headers' ), 0 );
 		add_action( 'template_redirect', array( self::class, 'enforce_active_session' ), -1 );
 		add_action( 'admin_init', array( self::class, 'keep_collectors_out_of_admin' ) );
@@ -29,6 +31,67 @@ final class GMR_Core_Collectors {
 
 	private static function is_collector( WP_User $user ): bool {
 		return in_array( self::ROLE, (array) $user->roles, true );
+	}
+
+	private static function access_url(): string {
+		$page = get_page_by_path( 'coleccionistas' );
+		return $page ? get_permalink( $page ) : home_url( '/coleccionistas/' );
+	}
+
+	public static function handle_frontend_access(): void {
+		if ( ! is_page( 'coleccionistas' ) || 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ?? '' ) ) return;
+		$action = sanitize_key( wp_unslash( $_POST['gmr_access_action'] ?? '' ) );
+		$target = get_permalink();
+		if ( 'login' === $action ) {
+			if ( ! isset( $_POST['gmr_login_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_login_nonce'] ) ), 'gmr_collector_login' ) ) {
+				wp_safe_redirect( add_query_arg( 'login_error', 'security', $target ) ); exit;
+			}
+			$user = wp_signon( array(
+				'user_login'    => sanitize_text_field( wp_unslash( $_POST['log'] ?? '' ) ),
+				'user_password' => (string) wp_unslash( $_POST['pwd'] ?? '' ),
+				'remember'      => ! empty( $_POST['rememberme'] ),
+			), is_ssl() );
+			if ( is_wp_error( $user ) ) {
+				$reason = 'gmr_collector_inactive' === $user->get_error_code() ? 'inactive' : 'invalid';
+				wp_safe_redirect( add_query_arg( 'login_error', $reason, $target ) ); exit;
+			}
+			$redirect = wp_validate_redirect( wp_unslash( $_POST['redirect_to'] ?? '' ), $target );
+			wp_safe_redirect( $redirect ); exit;
+		}
+		if ( 'lostpassword' === $action ) {
+			if ( ! isset( $_POST['gmr_lost_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_lost_nonce'] ) ), 'gmr_collector_lostpassword' ) ) {
+				wp_safe_redirect( add_query_arg( array( 'action'=>'lostpassword', 'reset'=>'security' ), $target ) ); exit;
+			}
+			$login = sanitize_text_field( wp_unslash( $_POST['user_login'] ?? '' ) );
+			if ( $login ) retrieve_password( $login );
+			wp_safe_redirect( add_query_arg( array( 'action'=>'lostpassword', 'reset'=>'sent' ), $target ) ); exit;
+		}
+		if ( 'resetpassword' === $action ) {
+			$key = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
+			$login = sanitize_user( wp_unslash( $_POST['login'] ?? '' ) );
+			if ( ! isset( $_POST['gmr_reset_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_reset_nonce'] ) ), 'gmr_collector_reset_' . $login ) ) {
+				wp_safe_redirect( add_query_arg( array( 'action'=>'reset', 'key'=>$key, 'login'=>$login, 'reset'=>'security' ), $target ) ); exit;
+			}
+			$user = check_password_reset_key( $key, $login );
+			$password = (string) wp_unslash( $_POST['pass1'] ?? '' );
+			$confirmation = (string) wp_unslash( $_POST['pass2'] ?? '' );
+			if ( is_wp_error( $user ) ) {
+				wp_safe_redirect( add_query_arg( array( 'action'=>'lostpassword', 'reset'=>'expired' ), $target ) ); exit;
+			}
+			if ( strlen( $password ) < 10 || $password !== $confirmation ) {
+				wp_safe_redirect( add_query_arg( array( 'action'=>'reset', 'key'=>$key, 'login'=>$login, 'reset'=>'mismatch' ), $target ) ); exit;
+			}
+			reset_password( $user, $password );
+			wp_safe_redirect( add_query_arg( 'reset', 'complete', $target ) ); exit;
+		}
+	}
+
+	public static function collector_reset_message( string $message, string $key, string $user_login, WP_User $user ): string {
+		if ( ! self::is_collector( $user ) ) return $message;
+		$url = add_query_arg( array( 'action'=>'reset', 'key'=>$key, 'login'=>$user_login ), self::access_url() );
+		return "Recibimos una solicitud para restablecer su acceso privado a Galería Mayarí Rojas.\n\n" .
+			"Para elegir una nueva contraseña, visite este enlace:\n" . $url . "\n\n" .
+			"Si no realizó esta solicitud, puede ignorar este mensaje.";
 	}
 
 	public static function status( WP_User $user ): string {
@@ -59,7 +122,7 @@ final class GMR_Core_Collectors {
 		$user = wp_get_current_user();
 		if ( $user->exists() && self::is_collector( $user ) && 'active' !== self::status( $user ) ) {
 			wp_logout();
-			wp_safe_redirect( add_query_arg( 'access', 'inactive', home_url( '/coleccionistas/' ) ) ); exit;
+			wp_safe_redirect( add_query_arg( 'access', 'inactive', self::access_url() ) ); exit;
 		}
 	}
 

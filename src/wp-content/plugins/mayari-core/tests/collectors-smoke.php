@@ -12,7 +12,11 @@ $checks = array(
 	'role' => $user instanceof WP_User && in_array( 'gmr_collector', $user->roles, true ),
 	'default_active' => 'active' === GMR_Core_Collectors::status( $user ),
 	'catalog_cap' => $user->has_cap( 'gmr_view_collector_catalog' ),
+	'frontend_handler' => false !== has_action( 'template_redirect', array( GMR_Core_Collectors::class, 'handle_frontend_access' ) ),
 );
+$reset_message = GMR_Core_Collectors::collector_reset_message( 'native', 'sample-key', $login, $user );
+$access_page = get_page_by_path( 'coleccionistas' );
+$checks['branded_reset_url'] = $access_page && str_contains( $reset_message, get_permalink( $access_page ) ) && ! str_contains( $reset_message, 'wp-login.php' );
 update_user_meta( $user_id, 'gmr_collector_status', 'suspended' );
 $blocked = GMR_Core_Collectors::block_inactive_login( $user, $login, 'unused' );
 $checks['suspended_blocked'] = is_wp_error( $blocked ) && 'gmr_collector_inactive' === $blocked->get_error_code();
