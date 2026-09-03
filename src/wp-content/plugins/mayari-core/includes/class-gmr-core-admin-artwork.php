@@ -258,11 +258,29 @@ final class GMR_Core_Admin_Artwork {
 	}
 
 	public static function add_columns( array $columns ): array {
-		$columns['gmr_artist']     = __( 'Artista', 'mayari-core' );
-		$columns['gmr_discipline'] = __( 'Disciplina', 'mayari-core' );
-		$columns['gmr_status']     = __( 'Estado', 'mayari-core' );
-		$columns['gmr_visibility'] = __( 'Visibilidad', 'mayari-core' );
-		return $columns;
+		$custom = array(
+			'gmr_artist'     => __( 'Artista', 'mayari-core' ),
+			'gmr_discipline' => __( 'Disciplina', 'mayari-core' ),
+			'gmr_status'     => __( 'Estado', 'mayari-core' ),
+			'gmr_visibility' => __( 'Visibilidad', 'mayari-core' ),
+		);
+		$ordered = array();
+
+		foreach ( array( 'cb', 'thumb', 'name', 'sku' ) as $key ) {
+			if ( isset( $columns[ $key ] ) ) {
+				$ordered[ $key ] = $columns[ $key ];
+			}
+		}
+
+		$ordered = array_merge( $ordered, $custom );
+
+		foreach ( array( 'is_in_stock', 'price', 'date' ) as $key ) {
+			if ( isset( $columns[ $key ] ) ) {
+				$ordered[ $key ] = $columns[ $key ];
+			}
+		}
+
+		return $ordered;
 	}
 
 	public static function render_column( string $column, int $post_id ): void {
@@ -275,11 +293,11 @@ final class GMR_Core_Admin_Artwork {
 				break;
 			case 'gmr_status':
 				$value = get_post_meta( $post_id, 'gmr_commercial_status', true ) ?: 'available';
-				echo esc_html( self::commercial_options()[ $value ] ?? $value );
+				printf( '<span class="gmr-admin-badge gmr-admin-badge--%s">%s</span>', esc_attr( $value ), esc_html( self::commercial_options()[ $value ] ?? $value ) );
 				break;
 			case 'gmr_visibility':
 				$value = get_post_meta( $post_id, 'gmr_visibility', true ) ?: 'public';
-				echo esc_html( self::visibility_options()[ $value ] ?? $value );
+				printf( '<span class="gmr-admin-badge gmr-admin-badge--%s">%s</span>', esc_attr( $value ), esc_html( self::visibility_options()[ $value ] ?? $value ) );
 				break;
 		}
 	}
