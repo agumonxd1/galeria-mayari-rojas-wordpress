@@ -2,11 +2,15 @@
 Theme Name: Mayari Rojas
 Theme URI: https://galeriamayarirojas.com/
 Author: Galeria Mayari Rojas
-Description: Tema editorial y catalogo privado para Galeria Mayari Rojas.
-Version: 1.16.0
+Author URI: https://galeriamayarirojas.com/
+Description: Tema editorial a medida para Galería Mayarí Rojas. Integra catálogo de obras con WooCommerce, perfiles de artistas, colecciones, agenda cultural, archivo multimedia y una experiencia privada para coleccionistas.
+Version: 1.17.0
 Requires at least: 6.7
 Requires PHP: 8.1
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: mayari-rojas
+Tags: custom-logo, custom-menu, featured-images, full-width-template, translation-ready, e-commerce, portfolio
 */
 :root{--ink:#191816;--paper:#f4f1ea;--white:#fff;--muted:#777168;--line:rgba(25,24,22,.18);--accent:#9a7145;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,Arial,sans-serif;--wrap:min(1380px,calc(100% - 48px));--ease:cubic-bezier(.22,1,.36,1)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.65 var(--sans)}a{color:inherit;text-decoration:none}img{display:block;max-width:100%;height:auto}button,input,select{font:inherit}.screen-reader-text{position:absolute;clip:rect(1px,1px,1px,1px)}
