@@ -61,7 +61,7 @@ final class GMR_Core_Admin_Design {
 			return;
 		}
 
-		$node->title = '<span class="gmr-adminbar-mark" aria-hidden="true">M</span><span class="gmr-adminbar-name">' . esc_html( get_bloginfo( 'name' ) ) . '</span>';
+		$node->title = esc_html( get_bloginfo( 'name' ) );
 		$admin_bar->add_node( (array) $node );
 	}
 

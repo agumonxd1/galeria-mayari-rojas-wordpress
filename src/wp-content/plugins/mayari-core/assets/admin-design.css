@@ -25,6 +25,7 @@ body.gmr-admin {
 .gmr-admin #adminmenuwrap,
 .gmr-admin #adminmenu,
 .gmr-admin #wpadminbar { background: var(--gmr-admin-charcoal); }
+.gmr-admin #adminmenuback { width: 176px; }
 .gmr-admin #adminmenuwrap,
 .gmr-admin #adminmenu { width: 176px; }
 .gmr-admin #adminmenu { margin-top: 12px; }
@@ -41,9 +42,18 @@ body.gmr-admin {
 	color: #fff;
 	box-shadow: none;
 }
+.gmr-admin #adminmenu li.wp-has-current-submenu:after { display: none; }
 .gmr-admin #adminmenu li.current .wp-menu-image:before,
 .gmr-admin #adminmenu li.wp-has-current-submenu .wp-menu-image:before { color: #fff; }
-.gmr-admin #adminmenu .wp-submenu { left: 176px; padding: 10px; background: #292622; border-radius: 0 9px 9px 0; }
+.gmr-admin #adminmenu .wp-submenu { background: #292622; }
+.gmr-admin #adminmenu .wp-not-current-submenu .wp-submenu { left: 176px; padding: 10px; border-radius: 0 9px 9px 0; }
+.gmr-admin #adminmenu .wp-has-current-submenu .wp-submenu {
+	margin: 0 8px 8px;
+	padding: 6px 0 8px;
+	background: rgba(255,255,255,.035);
+	border-radius: 0 0 7px 7px;
+}
+.gmr-admin #adminmenu .wp-has-current-submenu .wp-submenu a { padding: 6px 12px 6px 34px; }
 .gmr-admin #adminmenu .wp-submenu a { padding: 7px 11px; border-radius: 5px; }
 .gmr-admin #adminmenu .wp-submenu a:focus,
 .gmr-admin #adminmenu .wp-submenu a:hover,
@@ -51,12 +61,12 @@ body.gmr-admin {
 .gmr-admin #adminmenu .wp-menu-separator { height: 1px; margin: 11px 18px; background: rgba(255,255,255,.13); }
 .gmr-admin #collapse-menu { color: rgba(255,255,255,.65); }
 .gmr-admin #wpadminbar { border-bottom: 1px solid rgba(255,255,255,.1); }
+.gmr-admin #wpadminbar .ab-top-menu > li > .ab-item { padding-right: 10px; padding-left: 10px; }
 .gmr-admin #wpadminbar .ab-item,
 .gmr-admin #wpadminbar a.ab-item { color: rgba(255,255,255,.78); }
 .gmr-admin #wpadminbar .quicklinks .ab-top-menu > li:hover > .ab-item,
 .gmr-admin #wpadminbar .quicklinks .ab-top-menu > li > .ab-item:focus { background: #292622; color: #fff; }
 .gmr-admin #wpadminbar .menupop .ab-sub-wrapper { background: #292622; }
-.gmr-adminbar-mark { display: inline-grid; place-items: center; width: 20px; height: 20px; margin: 0 7px 0 1px; border: 1px solid currentColor; font: 500 15px/1 Georgia, serif; vertical-align: middle; }
 
 /* Editorial hierarchy */
 .gmr-admin .wrap > h1,
@@ -213,7 +223,8 @@ body.gmr-admin {
 	.gmr-admin.auto-fold #wpcontent,
 	.gmr-admin.auto-fold #wpfooter { margin-left: 36px; }
 	.gmr-admin.auto-fold #adminmenu,
-	.gmr-admin.auto-fold #adminmenuwrap { width: 36px; }
+	.gmr-admin.auto-fold #adminmenuwrap,
+	.gmr-admin.auto-fold #adminmenuback { width: 36px; }
 	.gmr-admin.auto-fold #adminmenu .wp-submenu { left: 36px; }
 }
 
