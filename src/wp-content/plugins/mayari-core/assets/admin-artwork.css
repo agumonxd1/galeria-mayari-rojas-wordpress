@@ -1,4 +1,4 @@
-body.post-type-product{--gmr-admin-ink:#191815;--gmr-admin-paper:#fbfaf7;--gmr-admin-canvas:#f3f0e9;--gmr-admin-line:#ddd8ce;--gmr-admin-muted:#6d685f;--gmr-admin-accent:#ad7a43}
+body.post-type-product{--gmr-admin-muted:#6d685f}
 #gmr-artwork-data,#gmr-images{border:0;border-radius:12px;overflow:hidden;background:var(--gmr-admin-paper);box-shadow:0 8px 30px rgba(38,32,22,.08)}
 #gmr-artwork-data .postbox-header,#gmr-images .postbox-header{min-height:58px;padding:0 8px;border-bottom:1px solid var(--gmr-admin-line);background:var(--gmr-admin-ink);color:#fff}
 #gmr-artwork-data .hndle,#gmr-images .hndle{color:#fff;font-size:15px;letter-spacing:.02em}#gmr-artwork-data .handle-order-higher,#gmr-artwork-data .handle-order-lower,#gmr-artwork-data .handlediv,#gmr-images .handle-order-higher,#gmr-images .handle-order-lower,#gmr-images .handlediv{color:#fff}

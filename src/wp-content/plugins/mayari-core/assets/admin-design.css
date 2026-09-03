@@ -1,0 +1,241 @@
+/* Mayari administration design system. Keep selectors under .gmr-admin. */
+body.gmr-admin {
+	--gmr-admin-ink: #191815;
+	--gmr-admin-charcoal: #1b1916;
+	--gmr-admin-paper: #f3efe7;
+	--gmr-admin-canvas: #faf8f3;
+	--gmr-admin-accent: #a67b4f;
+	--gmr-admin-line: rgba(25, 24, 21, .16);
+	--gmr-admin-line: color-mix(in srgb, var(--gmr-admin-ink) 16%, transparent);
+	--gmr-admin-shadow: 0 12px 34px rgba(38, 31, 23, .08);
+	--gmr-admin-radius: 12px;
+	background: var(--gmr-admin-paper);
+	color: var(--gmr-admin-ink);
+	font-family: var(--gmr-admin-sans, "Segoe UI", Arial, sans-serif);
+}
+
+.gmr-admin #wpcontent,
+.gmr-admin #wpfooter { margin-left: 176px; }
+.gmr-admin #wpcontent { min-height: calc(100vh - 32px); }
+.gmr-admin #wpbody-content { padding-bottom: 72px; }
+.gmr-admin .wrap { margin: 34px 34px 0 32px; }
+
+/* Navigation and toolbar */
+.gmr-admin #adminmenuback,
+.gmr-admin #adminmenuwrap,
+.gmr-admin #adminmenu,
+.gmr-admin #wpadminbar { background: var(--gmr-admin-charcoal); }
+.gmr-admin #adminmenuwrap,
+.gmr-admin #adminmenu { width: 176px; }
+.gmr-admin #adminmenu { margin-top: 12px; }
+.gmr-admin #adminmenu a { color: rgba(255,255,255,.74); }
+.gmr-admin #adminmenu .wp-menu-image:before { color: rgba(255,255,255,.55); }
+.gmr-admin #adminmenu li.menu-top { margin: 3px 10px; border-radius: 7px; }
+.gmr-admin #adminmenu li.menu-top > a { min-height: 40px; border-radius: 7px; }
+.gmr-admin #adminmenu li.menu-top:hover,
+.gmr-admin #adminmenu li.opensub > a.menu-top,
+.gmr-admin #adminmenu li > a.menu-top:focus { background: rgba(255,255,255,.07); color: #fff; }
+.gmr-admin #adminmenu li.current > a.menu-top,
+.gmr-admin #adminmenu li.wp-has-current-submenu > a.wp-has-current-submenu {
+	background: var(--gmr-admin-accent);
+	color: #fff;
+	box-shadow: none;
+}
+.gmr-admin #adminmenu li.current .wp-menu-image:before,
+.gmr-admin #adminmenu li.wp-has-current-submenu .wp-menu-image:before { color: #fff; }
+.gmr-admin #adminmenu .wp-submenu { left: 176px; padding: 10px; background: #292622; border-radius: 0 9px 9px 0; }
+.gmr-admin #adminmenu .wp-submenu a { padding: 7px 11px; border-radius: 5px; }
+.gmr-admin #adminmenu .wp-submenu a:focus,
+.gmr-admin #adminmenu .wp-submenu a:hover,
+.gmr-admin #adminmenu .wp-submenu li.current a { color: #fff; background: rgba(255,255,255,.07); }
+.gmr-admin #adminmenu .wp-menu-separator { height: 1px; margin: 11px 18px; background: rgba(255,255,255,.13); }
+.gmr-admin #collapse-menu { color: rgba(255,255,255,.65); }
+.gmr-admin #wpadminbar { border-bottom: 1px solid rgba(255,255,255,.1); }
+.gmr-admin #wpadminbar .ab-item,
+.gmr-admin #wpadminbar a.ab-item { color: rgba(255,255,255,.78); }
+.gmr-admin #wpadminbar .quicklinks .ab-top-menu > li:hover > .ab-item,
+.gmr-admin #wpadminbar .quicklinks .ab-top-menu > li > .ab-item:focus { background: #292622; color: #fff; }
+.gmr-admin #wpadminbar .menupop .ab-sub-wrapper { background: #292622; }
+.gmr-adminbar-mark { display: inline-grid; place-items: center; width: 20px; height: 20px; margin: 0 7px 0 1px; border: 1px solid currentColor; font: 500 15px/1 Georgia, serif; vertical-align: middle; }
+
+/* Editorial hierarchy */
+.gmr-admin .wrap > h1,
+.gmr-admin .wrap > h2:first-child,
+.gmr-admin .wp-heading-inline,
+.gmr-admin .woocommerce-layout__header-heading {
+	color: var(--gmr-admin-ink);
+	font-family: var(--gmr-admin-serif, Georgia, serif);
+	font-size: clamp(34px, 3.2vw, 52px);
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: -.025em;
+}
+.gmr-admin .wrap .page-title-action { top: -7px; margin-left: 14px; }
+.gmr-admin h2,
+.gmr-admin h3,
+.gmr-admin .postbox .hndle { color: var(--gmr-admin-ink); }
+.gmr-admin .subsubsub { margin: 16px 0 20px; }
+.gmr-admin .subsubsub a { color: #5f584f; }
+.gmr-admin .subsubsub a.current { color: var(--gmr-admin-ink); font-weight: 650; }
+.gmr-admin a { color: #7e582f; }
+.gmr-admin a:hover,
+.gmr-admin a:focus { color: var(--gmr-admin-accent); }
+
+/* Buttons and controls */
+.gmr-admin .button,
+.gmr-admin .button-secondary,
+.gmr-admin .page-title-action,
+.gmr-admin input[type=submit] {
+	min-height: 36px;
+	padding: 3px 15px;
+	border-color: rgba(25,24,21,.28);
+	border-radius: 999px;
+	background: var(--gmr-admin-canvas);
+	color: var(--gmr-admin-ink);
+	box-shadow: none;
+	font-weight: 600;
+}
+.gmr-admin .button:hover,
+.gmr-admin .button-secondary:hover,
+.gmr-admin .page-title-action:hover { border-color: var(--gmr-admin-ink); background: #fff; color: var(--gmr-admin-ink); }
+.gmr-admin .button-primary,
+.gmr-admin input[type=submit].button-primary,
+.gmr-admin .wrap .page-title-action {
+	border-color: var(--gmr-admin-charcoal);
+	background: var(--gmr-admin-charcoal);
+	color: #fff;
+}
+.gmr-admin .button-primary:hover,
+.gmr-admin .button-primary:focus,
+.gmr-admin .wrap .page-title-action:hover { border-color: var(--gmr-admin-accent); background: var(--gmr-admin-accent); color: #fff; }
+.gmr-admin input[type=text],
+.gmr-admin input[type=email],
+.gmr-admin input[type=url],
+.gmr-admin input[type=password],
+.gmr-admin input[type=number],
+.gmr-admin input[type=search],
+.gmr-admin input[type=tel],
+.gmr-admin input[type=date],
+.gmr-admin select,
+.gmr-admin textarea {
+	border-color: #c9c1b5;
+	border-radius: 6px;
+	background-color: #fff;
+	color: var(--gmr-admin-ink);
+	box-shadow: 0 1px 1px rgba(25,24,21,.02);
+}
+.gmr-admin input:focus,
+.gmr-admin select:focus,
+.gmr-admin textarea:focus {
+	border-color: var(--gmr-admin-accent);
+	box-shadow: 0 0 0 1px var(--gmr-admin-accent);
+	outline: 0;
+}
+.gmr-admin input[type=checkbox],
+.gmr-admin input[type=radio] { border-color: #938b7f; box-shadow: none; }
+.gmr-admin input[type=checkbox]:checked,
+.gmr-admin input[type=radio]:checked { border-color: var(--gmr-admin-accent); background: var(--gmr-admin-accent); }
+.gmr-admin input[type=checkbox]:checked:before { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23fff' d='M8.3 14.2 4.6 10.5l1.4-1.4 2.3 2.3 5.7-5.7 1.4 1.4z'/%3E%3C/svg%3E"); }
+
+/* Cards, tables and meta boxes */
+.gmr-admin .postbox,
+.gmr-admin .stuffbox,
+.gmr-admin .card,
+.gmr-admin .welcome-panel,
+.gmr-admin .health-check-accordion,
+.gmr-admin .community-events,
+.gmr-admin .wc-admin-card {
+	border: 1px solid var(--gmr-admin-line);
+	border-radius: var(--gmr-admin-radius);
+	background: var(--gmr-admin-canvas);
+	box-shadow: var(--gmr-admin-shadow);
+	overflow: hidden;
+}
+.gmr-admin .postbox .postbox-header { border-bottom-color: var(--gmr-admin-line); }
+.gmr-admin .postbox .hndle { padding: 14px 18px; font-size: 14px; }
+.gmr-admin .postbox .inside { padding-left: 18px; padding-right: 18px; }
+.gmr-admin .wp-list-table {
+	border: 1px solid var(--gmr-admin-line);
+	border-radius: var(--gmr-admin-radius);
+	background: var(--gmr-admin-canvas);
+	box-shadow: var(--gmr-admin-shadow);
+	border-collapse: separate;
+	border-spacing: 0;
+	overflow: hidden;
+}
+.gmr-admin .wp-list-table thead th,
+.gmr-admin .wp-list-table thead td,
+.gmr-admin .wp-list-table tfoot th,
+.gmr-admin .wp-list-table tfoot td {
+	border-color: var(--gmr-admin-line);
+	background: #eee7dc;
+	color: #514a41;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+.gmr-admin .wp-list-table.striped > tbody > :nth-child(odd),
+.gmr-admin ul.striped > :nth-child(odd) { background: #f7f3ec; }
+.gmr-admin .wp-list-table tbody tr:hover { background: #eee7dc; }
+.gmr-admin .tablenav { margin: 14px 0; }
+.gmr-admin .tablenav .actions { padding: 0 8px 0 0; }
+
+/* Notices and tabs */
+.gmr-admin .notice,
+.gmr-admin div.updated,
+.gmr-admin div.error {
+	margin: 16px 0;
+	border-width: 0 0 0 4px;
+	border-radius: 7px;
+	background: var(--gmr-admin-canvas);
+	box-shadow: 0 5px 18px rgba(38,31,23,.06);
+}
+.gmr-admin .notice-success { border-left-color: #58795e; }
+.gmr-admin .notice-warning { border-left-color: var(--gmr-admin-accent); }
+.gmr-admin .nav-tab-wrapper { border-bottom-color: var(--gmr-admin-line); }
+.gmr-admin .nav-tab { border-color: transparent; background: transparent; color: #6b645b; }
+.gmr-admin .nav-tab-active,
+.gmr-admin .nav-tab-active:focus,
+.gmr-admin .nav-tab-active:hover { border-color: var(--gmr-admin-line) var(--gmr-admin-line) var(--gmr-admin-paper); background: var(--gmr-admin-paper); color: var(--gmr-admin-ink); }
+
+/* Dashboard and editor integrations */
+.gmr-admin #dashboard-widgets .postbox .inside { margin-top: 12px; }
+.gmr-admin #dashboard_right_now li a:before,
+.gmr-admin #dashboard_right_now li span:before { color: var(--gmr-admin-accent); }
+.gmr-admin .editor-styles-wrapper,
+.gmr-admin .interface-interface-skeleton__content { color: initial; }
+.gmr-admin .media-modal,
+.gmr-admin .components-modal__frame { font-family: var(--gmr-admin-sans, "Segoe UI", Arial, sans-serif); }
+.gmr-admin #wpfooter { color: #777066; font-style: normal; }
+
+@media (max-width: 960px) {
+	.gmr-admin.auto-fold #wpcontent,
+	.gmr-admin.auto-fold #wpfooter { margin-left: 36px; }
+	.gmr-admin.auto-fold #adminmenu,
+	.gmr-admin.auto-fold #adminmenuwrap { width: 36px; }
+	.gmr-admin.auto-fold #adminmenu .wp-submenu { left: 36px; }
+}
+
+@media (max-width: 782px) {
+	body.gmr-admin { background: var(--gmr-admin-paper); }
+	.gmr-admin.auto-fold #wpcontent { padding-left: 0; }
+	.gmr-admin #wpcontent,
+	.gmr-admin #wpfooter,
+	.gmr-admin.auto-fold #wpcontent,
+	.gmr-admin.auto-fold #wpfooter { margin-left: 0; }
+	.gmr-admin .wrap { margin: 24px 14px 0; }
+	.gmr-admin .wrap > h1,
+	.gmr-admin .wp-heading-inline { font-size: 36px; }
+	.gmr-admin .wrap .page-title-action { display: inline-flex; align-items: center; margin: 12px 0 8px; }
+	.gmr-admin .wp-list-table { border-radius: 8px; }
+	.gmr-admin .button,
+	.gmr-admin .button-secondary,
+	.gmr-admin input[type=submit] { min-height: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.gmr-admin *,
+	.gmr-admin *:before,
+	.gmr-admin *:after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

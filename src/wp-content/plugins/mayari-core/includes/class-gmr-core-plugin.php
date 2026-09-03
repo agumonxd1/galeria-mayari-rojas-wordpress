@@ -33,6 +33,7 @@ final class GMR_Core_Plugin {
 		GMR_Core_Admin_Artwork::register_hooks();
 		GMR_Core_Admin_Terms::register_hooks();
 		GMR_Core_Admin_Editorial::register_hooks();
+		GMR_Core_Admin_Design::register_hooks();
 		GMR_Core_Inquiry::register_hooks();
 		GMR_Core_Institution::register_hooks();
 		GMR_Core_Collectors::register_hooks();
