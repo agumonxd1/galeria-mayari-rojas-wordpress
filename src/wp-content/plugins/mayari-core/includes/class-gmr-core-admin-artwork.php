@@ -20,6 +20,7 @@ final class GMR_Core_Admin_Artwork {
 		add_action( 'add_meta_boxes_product', array( self::class, 'add_meta_box' ) );
 		add_action( 'save_post_product', array( self::class, 'save' ), 20, 2 );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_assets' ) );
+		add_action( 'wp_ajax_gmr_create_artwork_term', array( self::class, 'create_term' ) );
 		add_action( 'admin_notices', array( self::class, 'incomplete_notice' ) );
 		add_filter( 'manage_edit-product_columns', array( self::class, 'add_columns' ), 30 );
 		add_action( 'manage_product_posts_custom_column', array( self::class, 'render_column' ), 10, 2 );
@@ -228,6 +229,48 @@ final class GMR_Core_Admin_Artwork {
 
 		wp_enqueue_style( 'gmr-admin-artwork', plugins_url( 'assets/admin-artwork.css', GMR_CORE_FILE ), array(), GMR_CORE_VERSION );
 		wp_enqueue_script( 'gmr-admin-artwork', plugins_url( 'assets/admin-artwork.js', GMR_CORE_FILE ), array(), GMR_CORE_VERSION, true );
+		wp_localize_script(
+			'gmr-admin-artwork',
+			'gmrArtworkAdmin',
+			array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'nonce'   => wp_create_nonce( 'gmr_create_artwork_term' ),
+				'error'   => __( 'No fue posible crear la opción.', 'mayari-core' ),
+			)
+		);
+	}
+
+	public static function create_term(): void {
+		check_ajax_referer( 'gmr_create_artwork_term', 'nonce' );
+		$taxonomy = isset( $_POST['taxonomy'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy'] ) ) : '';
+		$name     = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$allowed  = array( 'gmr_artist', 'product_cat', 'gmr_collection', 'gmr_technique', 'gmr_support', 'gmr_material' );
+
+		if ( ! in_array( $taxonomy, $allowed, true ) || '' === $name ) {
+			wp_send_json_error( array( 'message' => __( 'Escribe un nombre válido.', 'mayari-core' ) ), 400 );
+		}
+
+		$taxonomy_object = get_taxonomy( $taxonomy );
+		if ( ! $taxonomy_object || ! current_user_can( $taxonomy_object->cap->manage_terms ) ) {
+			wp_send_json_error( array( 'message' => __( 'No tienes permiso para crear esta opción.', 'mayari-core' ) ), 403 );
+		}
+
+		$existing = term_exists( $name, $taxonomy );
+		if ( $existing ) {
+			$term = get_term( (int) ( is_array( $existing ) ? $existing['term_id'] : $existing ), $taxonomy );
+		} else {
+			$created = wp_insert_term( $name, $taxonomy );
+			if ( is_wp_error( $created ) ) {
+				wp_send_json_error( array( 'message' => $created->get_error_message() ), 400 );
+			}
+			$term = get_term( (int) $created['term_id'], $taxonomy );
+		}
+
+		if ( ! $term || is_wp_error( $term ) ) {
+			wp_send_json_error( array( 'message' => __( 'No fue posible recuperar la opción.', 'mayari-core' ) ), 500 );
+		}
+
+		wp_send_json_success( array( 'id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug ) );
 	}
 
 	public static function incomplete_notice(): void {
@@ -347,18 +390,29 @@ final class GMR_Core_Admin_Artwork {
 	private static function term_select( int $post_id, string $taxonomy, string $name, string $label, bool $multiple, array $allowed_slugs = array() ): void {
 		$terms = get_terms( array( 'taxonomy' => $taxonomy, 'hide_empty' => false ) );
 		$selected = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
+		$taxonomy_object = get_taxonomy( $taxonomy );
+		$singular = $taxonomy_object ? $taxonomy_object->labels->singular_name : __( 'opción', 'mayari-core' );
 		?>
-		<label class="gmr-field">
-			<span><?php echo esc_html( $label ); ?></span>
-			<select name="<?php echo esc_attr( $name ); ?><?php echo $multiple ? '[]' : ''; ?>" <?php echo $multiple ? 'multiple size="4"' : ''; ?> data-gmr-taxonomy="<?php echo esc_attr( $taxonomy ); ?>">
+		<div class="gmr-field">
+			<label class="gmr-field__label" for="<?php echo esc_attr( $name ); ?>"><?php echo esc_html( $label ); ?></label>
+			<select id="<?php echo esc_attr( $name ); ?>" name="<?php echo esc_attr( $name ); ?><?php echo $multiple ? '[]' : ''; ?>" <?php echo $multiple ? 'multiple size="4"' : ''; ?> data-gmr-taxonomy="<?php echo esc_attr( $taxonomy ); ?>">
 				<?php if ( ! $multiple ) : ?><option value=""><?php esc_html_e( 'Seleccionar', 'mayari-core' ); ?></option><?php endif; ?>
 				<?php foreach ( is_wp_error( $terms ) ? array() : $terms as $term ) : ?>
 					<?php if ( $allowed_slugs && ! in_array( $term->slug, $allowed_slugs, true ) ) { continue; } ?>
 					<option value="<?php echo esc_attr( (string) $term->term_id ); ?>" data-slug="<?php echo esc_attr( $term->slug ); ?>" <?php selected( in_array( $term->term_id, $selected, true ) ); ?>><?php echo esc_html( $term->name ); ?></option>
 				<?php endforeach; ?>
 			</select>
-			<small><?php esc_html_e( 'Puedes crear y normalizar opciones desde el menu de Productos.', 'mayari-core' ); ?></small>
-		</label>
+			<?php if ( $taxonomy_object && current_user_can( $taxonomy_object->cap->manage_terms ) ) : ?>
+				<span class="gmr-inline-term" data-gmr-inline-term>
+					<button type="button" class="button-link gmr-inline-term__toggle" data-gmr-term-toggle aria-expanded="false">+ <?php echo esc_html( sprintf( __( 'Crear %s', 'mayari-core' ), strtolower( $singular ) ) ); ?></button>
+					<span class="gmr-inline-term__form" data-gmr-term-form hidden>
+						<input type="text" data-gmr-term-name placeholder="<?php echo esc_attr( sprintf( __( 'Nombre de %s', 'mayari-core' ), strtolower( $singular ) ) ); ?>">
+						<button type="button" class="button" data-gmr-term-save data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>"><?php esc_html_e( 'Agregar', 'mayari-core' ); ?></button>
+						<span class="gmr-inline-term__status" data-gmr-term-status aria-live="polite"></span>
+					</span>
+				</span>
+			<?php endif; ?>
+		</div>
 		<?php
 	}
 

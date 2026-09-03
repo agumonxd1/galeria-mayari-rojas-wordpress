@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 final class GMR_Core_Artwork_Images {
 	public static function register_hooks(): void {
-		add_action('add_meta_boxes_product', static function() { add_meta_box('gmr-images','Imágenes pública y privada',array(self::class,'box'),'product','normal'); });
+		add_action('add_meta_boxes_product', static function() { add_meta_box('gmr-images','Imágenes pública y privada',array(self::class,'box'),'product','normal','high'); });
 		add_action('post_edit_form_tag', static function() { echo ' enctype="multipart/form-data"'; });
 		add_action('save_post_product',array(self::class,'save'));
 		add_action('template_redirect',array(self::class,'serve'),-10);
@@ -39,12 +39,11 @@ final class GMR_Core_Artwork_Images {
 	public static function box(WP_Post $post): void {
 		wp_nonce_field('gmr_images','gmr_images_nonce');
 		$id=absint(get_post_meta($post->ID,'_gmr_public_image',true));
-		echo '<p><strong>Imagen pública</strong>: versión preparada con marca de agua o resolución reducida. Si no se carga, se usa la imagen destacada.</p>';
-		if ($id) echo wp_get_attachment_image($id,'thumbnail');
-		echo '<p><input type="file" name="gmr_public_upload" accept="image/jpeg,image/png,image/webp"></p><p><label><input type="checkbox" name="gmr_remove_public" value="1"> Quitar imagen pública alternativa</label></p>';
-		echo '<p><strong>Imagen privada</strong>: archivo protegido, visible solo para coleccionistas autorizados y administradores. Sin archivo privado se utiliza la imagen pública o destacada.</p>';
-		echo get_post_meta($post->ID,'_gmr_private_image',true) ? '<p>✓ Hay una imagen privada guardada.</p>' : '<p>No hay imagen privada.</p>';
-		echo '<p><input type="file" name="gmr_private_upload" accept="image/jpeg,image/png,image/webp"></p><p><label><input type="checkbox" name="gmr_remove_private" value="1"> Quitar imagen privada</label></p><p>Las imágenes destacadas y de la biblioteca siguen siendo públicas. No suba originales confidenciales a la biblioteca de medios.</p>';
+		echo '<div class="gmr-image-access-grid"><section class="gmr-image-access-card gmr-image-access-card--public"><span class="gmr-image-access-card__eyebrow">Vitrina pública</span><h3>Imagen pública</h3><p>Versión con marca de agua o resolución reducida. Si queda vacía, se utilizará la imagen destacada.</p>';
+		if ($id) echo '<div class="gmr-image-access-card__preview">'.wp_get_attachment_image($id,'thumbnail').'</div>';
+		echo '<label class="gmr-upload-zone"><strong>Seleccionar imagen pública</strong><span>JPEG, PNG o WebP</span><input type="file" name="gmr_public_upload" accept="image/jpeg,image/png,image/webp"></label><label class="gmr-image-remove"><input type="checkbox" name="gmr_remove_public" value="1"> Quitar imagen pública alternativa</label></section>';
+		$has_private=(bool)get_post_meta($post->ID,'_gmr_private_image',true);
+		echo '<section class="gmr-image-access-card gmr-image-access-card--private"><span class="gmr-image-access-card__eyebrow">Coleccionistas</span><h3>Imagen privada</h3><p>Original protegido para coleccionistas autorizados y administradores.</p><p class="gmr-private-state '.($has_private?'is-ready':'is-empty').'">'.($has_private?'✓ Original privado guardado':'Sin original privado').'</p><label class="gmr-upload-zone"><strong>Seleccionar original privado</strong><span>JPEG, PNG o WebP · fuera de la biblioteca</span><input type="file" name="gmr_private_upload" accept="image/jpeg,image/png,image/webp"></label><label class="gmr-image-remove"><input type="checkbox" name="gmr_remove_private" value="1"> Quitar imagen privada</label></section></div><p class="gmr-image-security-note"><span class="dashicons dashicons-shield-alt" aria-hidden="true"></span> Las imágenes de la biblioteca son públicas. Los originales confidenciales deben cargarse únicamente como imagen privada.</p>';
 		$error=get_transient('gmr_image_error_'.get_current_user_id());
 		if ($error) { echo '<p role="alert">'.esc_html($error).'</p>'; delete_transient('gmr_image_error_'.get_current_user_id()); }
 	}

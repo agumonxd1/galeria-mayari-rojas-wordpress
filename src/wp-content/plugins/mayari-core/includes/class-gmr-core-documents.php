@@ -29,13 +29,14 @@ final class GMR_Core_Documents {
 	}
 
 	public static function add_product_box(): void {
-		add_meta_box( 'gmr-private-documents', 'Documentos privados', array( self::class, 'product_box' ), 'product', 'normal', 'default' );
+		add_meta_box( 'gmr-private-documents', 'Documentos privados', array( self::class, 'product_box' ), 'product', 'normal', 'high' );
 	}
 
 	public static function product_box( WP_Post $post ): void {
 		wp_nonce_field( self::NONCE, 'gmr_documents_nonce' );
+		echo '<div class="gmr-private-panel gmr-private-panel--documents"><div class="gmr-private-panel__intro"><span class="gmr-private-panel__icon dashicons dashicons-lock" aria-hidden="true"></span><div><strong>Archivo confidencial</strong><p>Certificados, fichas y documentos disponibles únicamente para usuarios autorizados.</p></div></div><div class="gmr-private-panel__content">';
 		self::render_list( 'product', $post->ID );
-		echo '<p><label><strong>Agregar archivos</strong><br><input type="file" name="gmr_private_documents[]" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"></label></p><p class="description">PDF, imagen o documento. Se almacena fuera del directorio publico.</p>';
+		echo '<label class="gmr-upload-zone"><strong>Agregar documentos</strong><span>PDF, imagen, Word o ficha técnica</span><input type="file" name="gmr_private_documents[]" multiple accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"></label><p class="description">Los archivos se almacenan fuera del directorio público.</p></div></div>';
 	}
 
 	public static function artist_field( WP_Term $term ): void {
