@@ -1,0 +1,41 @@
+/* Structured layout for Appearance > Mayari Options. */
+.gmr-options__grid > .gmr-options__card { position: relative; }
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(1),
+.gmr-options__grid > .gmr-options__card:nth-of-type(4),
+.gmr-options__grid > .gmr-options__card:nth-of-type(6) { grid-column: span 7; }
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(2),
+.gmr-options__grid > .gmr-options__card:nth-of-type(5),
+.gmr-options__grid > .gmr-options__card:nth-of-type(7) { grid-column: span 5; }
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(3),
+.gmr-options__grid > .gmr-options__card:nth-of-type(8) { grid-column: 1 / -1; }
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(3),
+.gmr-options__grid > .gmr-options__card:nth-of-type(6),
+.gmr-options__grid > .gmr-options__card:nth-of-type(8) { margin-top: 58px; }
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(3)::before,
+.gmr-options__grid > .gmr-options__card:nth-of-type(6)::before,
+.gmr-options__grid > .gmr-options__card:nth-of-type(8)::before {
+	position: absolute;
+	top: -40px;
+	left: 0;
+	width: 100%;
+	padding-bottom: 10px;
+	border-bottom: 1px solid rgba(25, 24, 21, .18);
+	color: #191815;
+	font: 500 28px/1 var(--gmr-admin-serif, Georgia, serif);
+}
+
+.gmr-options__grid > .gmr-options__card:nth-of-type(3)::before { content: "Página principal"; }
+.gmr-options__grid > .gmr-options__card:nth-of-type(6)::before { content: "Sistema visual"; }
+.gmr-options__grid > .gmr-options__card:nth-of-type(8)::before { content: "Contenido compartido"; }
+
+@media (max-width: 782px) {
+	.gmr-options__grid > .gmr-options__card:nth-of-type(n) { grid-column: 1; }
+	.gmr-options__grid > .gmr-options__card:nth-of-type(3),
+	.gmr-options__grid > .gmr-options__card:nth-of-type(6),
+	.gmr-options__grid > .gmr-options__card:nth-of-type(8) { margin-top: 52px; }
+}
