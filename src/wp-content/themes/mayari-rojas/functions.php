@@ -102,9 +102,11 @@ function gmr_theme_year( int $post_id ): string {
 	return $start ? $start . ( $end ? '–' . $end : '' ) : '';
 }
 function gmr_theme_dimensions( int $post_id ): string {
-	$diameter = get_post_meta( $post_id, 'gmr_diameter', true ); if ( '' !== (string) $diameter ) return 'Ø ' . $diameter . ' cm';
+	$custom = trim( (string) get_post_meta( $post_id, 'gmr_dimensions_notes', true ) ); if ( $custom ) return $custom;
+	$unit = get_post_meta( $post_id, 'gmr_dimension_unit', true ) ?: 'cm';
+	$diameter = get_post_meta( $post_id, 'gmr_diameter', true ); if ( '' !== (string) $diameter ) return 'Ø ' . $diameter . ' ' . $unit;
 	$values = array_filter( array( get_post_meta( $post_id, 'gmr_height', true ), get_post_meta( $post_id, 'gmr_width', true ), get_post_meta( $post_id, 'gmr_depth', true ) ), static fn( $v ) => '' !== (string) $v );
-	return $values ? implode( ' × ', $values ) . ' cm' : '';
+	return $values ? implode( ' × ', $values ) . ' ' . $unit : '';
 }
 function gmr_theme_can_view_price( int $post_id ): bool {
 	$visibility = get_post_meta( $post_id, 'gmr_price_visibility', true ) ?: 'collectors';

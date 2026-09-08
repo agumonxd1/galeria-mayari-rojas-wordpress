@@ -81,9 +81,7 @@ final class GMR_Core_Admin_Artwork {
 				<div class="gmr-form-grid gmr-form-grid--dimensions">
 					<?php self::input( 'gmr_height', __( 'Alto', 'mayari-core' ), $meta( 'gmr_height' ), 'number', array( 'min' => '0', 'step' => '0.01' ) ); ?>
 					<?php self::input( 'gmr_width', __( 'Ancho', 'mayari-core' ), $meta( 'gmr_width' ), 'number', array( 'min' => '0', 'step' => '0.01' ) ); ?>
-					<div data-gmr-disciplines="escultura,joyeria">
-						<?php self::input( 'gmr_depth', __( 'Profundidad', 'mayari-core' ), $meta( 'gmr_depth' ), 'number', array( 'min' => '0', 'step' => '0.01' ) ); ?>
-					</div>
+					<?php self::input( 'gmr_depth', __( 'Profundidad', 'mayari-core' ), $meta( 'gmr_depth' ), 'number', array( 'min' => '0', 'step' => '0.01' ) ); ?>
 					<?php self::input( 'gmr_diameter', __( 'Diametro', 'mayari-core' ), $meta( 'gmr_diameter' ), 'number', array( 'min' => '0', 'step' => '0.01' ) ); ?>
 					<?php self::select( 'gmr_dimension_unit', __( 'Unidad', 'mayari-core' ), $meta( 'gmr_dimension_unit', 'cm' ), array( 'cm' => 'cm' ) ); ?>
 					<div data-gmr-disciplines="escultura,joyeria">
@@ -92,8 +90,9 @@ final class GMR_Core_Admin_Artwork {
 					<div data-gmr-disciplines="escultura,joyeria">
 						<?php self::select( 'gmr_weight_unit', __( 'Unidad de peso', 'mayari-core' ), $meta( 'gmr_weight_unit', 'kg' ), array( 'kg' => 'kg', 'g' => 'g' ) ); ?>
 					</div>
-					<?php self::textarea( 'gmr_dimensions_notes', __( 'Notas de dimensiones', 'mayari-core' ), $meta( 'gmr_dimensions_notes' ) ); ?>
+					<?php self::textarea( 'gmr_dimensions_notes', __( 'Medida publicada personalizada', 'mayari-core' ), $meta( 'gmr_dimensions_notes' ) ); ?>
 				</div>
+				<p class="description"><?php esc_html_e( 'Opcional. Si se completa, este texto reemplaza en la ficha la medida calculada con alto, ancho, profundidad o diámetro.', 'mayari-core' ); ?></p>
 			</section>
 
 			<section class="gmr-form-section" data-section="edition" data-gmr-disciplines="obra-grafica,escultura,joyeria">
@@ -123,6 +122,10 @@ final class GMR_Core_Admin_Artwork {
 			<section class="gmr-form-section" data-section="internal">
 				<h3><?php esc_html_e( '6. Informacion interna', 'mayari-core' ); ?></h3>
 				<div class="gmr-form-grid">
+					<?php self::textarea( 'gmr_history', __( 'Historia de la obra', 'mayari-core' ), $meta( 'gmr_history' ) ); ?>
+					<?php self::textarea( 'gmr_provenance', __( 'Procedencia', 'mayari-core' ), $meta( 'gmr_provenance' ) ); ?>
+					<?php self::select( 'gmr_condition', __( 'Estado de conservación', 'mayari-core' ), $meta( 'gmr_condition', 'unknown' ), self::condition_options() ); ?>
+					<?php self::textarea( 'gmr_condition_notes', __( 'Notas de conservación', 'mayari-core' ), $meta( 'gmr_condition_notes' ) ); ?>
 					<?php self::input( 'gmr_physical_location', __( 'Ubicacion fisica', 'mayari-core' ), $meta( 'gmr_physical_location' ) ); ?>
 					<?php self::input( 'gmr_consignor', __( 'Propietario o consignante', 'mayari-core' ), $meta( 'gmr_consignor' ) ); ?>
 					<?php self::textarea( 'gmr_internal_notes', __( 'Observaciones internas', 'mayari-core' ), $meta( 'gmr_internal_notes' ) ); ?>
@@ -179,7 +182,7 @@ final class GMR_Core_Admin_Artwork {
 	}
 
 	private static function save_fields( int $post_id ): void {
-		$text_fields = array( 'gmr_technique_notes', 'gmr_dimensions_notes', 'gmr_edition_number', 'gmr_signature_location', 'gmr_price_label', 'gmr_physical_location', 'gmr_consignor', 'gmr_internal_notes' );
+		$text_fields = array( 'gmr_technique_notes', 'gmr_dimensions_notes', 'gmr_edition_number', 'gmr_signature_location', 'gmr_price_label', 'gmr_history', 'gmr_provenance', 'gmr_condition_notes', 'gmr_physical_location', 'gmr_consignor', 'gmr_internal_notes' );
 		$number_fields = array( 'gmr_year_start', 'gmr_year_end', 'gmr_height', 'gmr_width', 'gmr_depth', 'gmr_diameter', 'gmr_weight', 'gmr_edition_size' );
 		$boolean_fields = array( 'gmr_undated', 'gmr_unique_piece', 'gmr_price_negotiable', 'gmr_featured' );
 		$enum_fields = array(
@@ -187,6 +190,7 @@ final class GMR_Core_Admin_Artwork {
 			'gmr_weight_unit'        => array_keys( array( 'kg' => 'kg', 'g' => 'g' ) ),
 			'gmr_signature_status'   => array_keys( self::signature_options() ),
 			'gmr_certificate_status' => array_keys( self::certificate_options() ),
+			'gmr_condition'          => array_keys( self::condition_options() ),
 			'gmr_commercial_status'  => array_keys( self::commercial_options() ),
 			'gmr_visibility'         => array_keys( self::visibility_options() ),
 			'gmr_price_visibility'   => array_keys( self::price_visibility_options() ),
@@ -499,6 +503,10 @@ final class GMR_Core_Admin_Artwork {
 
 	private static function certificate_options(): array {
 		return array( 'unknown' => 'Desconocido', 'included' => 'Incluido', 'available' => 'Disponible', 'not_available' => 'No disponible' );
+	}
+
+	private static function condition_options(): array {
+		return array( 'unknown' => __( 'Sin especificar', 'mayari-core' ), 'excellent' => __( 'Excelente', 'mayari-core' ), 'good' => __( 'Bueno', 'mayari-core' ), 'restored' => __( 'Restaurada', 'mayari-core' ), 'review' => __( 'Requiere revisión', 'mayari-core' ) );
 	}
 
 	private static function commercial_options(): array {
