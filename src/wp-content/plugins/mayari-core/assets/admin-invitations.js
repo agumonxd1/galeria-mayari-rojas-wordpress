@@ -1,0 +1,1 @@
+document.addEventListener('click',function(event){var button=event.target.closest('[data-gmr-copy]');if(!button)return;var text=button.dataset.gmrCopy;if(!navigator.clipboard)return;navigator.clipboard.writeText(text).then(function(){var original=button.textContent;button.textContent='Enlace copiado';setTimeout(function(){button.textContent=original},1800)})});

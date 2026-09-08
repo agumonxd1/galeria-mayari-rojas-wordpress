@@ -74,6 +74,7 @@ final class GMR_Core_Capabilities {
 		}
 
 		GMR_Core_Content::register_content();
+		if ( class_exists( 'GMR_Core_Collector_Invitations' ) ) GMR_Core_Collector_Invitations::activate();
 		update_option( 'gmr_core_version', GMR_CORE_VERSION );
 		flush_rewrite_rules();
 	}

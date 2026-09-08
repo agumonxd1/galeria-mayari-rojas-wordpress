@@ -38,6 +38,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		wp_enqueue_style( 'gmr-collectors', get_template_directory_uri() . '/assets/collectors.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_script( 'gmr-collectors', get_template_directory_uri() . '/assets/collectors.js', array(), wp_get_theme()->get( 'Version' ), true );
 	}
+	if ( get_query_var( 'gmr_collector_invitation' ) ) wp_enqueue_style( 'gmr-collector-invitation', get_template_directory_uri() . '/assets/collector-invitation.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_post_type_archive('gmr_event') || is_tax('gmr_event_type') || is_singular('gmr_event') || is_page('actividades') ) {
 		wp_enqueue_style( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 		wp_enqueue_script( 'gmr-agenda', get_template_directory_uri() . '/assets/agenda.js', array(), wp_get_theme()->get( 'Version' ), true );
