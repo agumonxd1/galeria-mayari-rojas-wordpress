@@ -19,3 +19,15 @@
 .gmr-artist-editorial .gmr-editorial h2,.gmr-artist-editorial .gmr-editorial h3,.gmr-artist-awards h2,.gmr-artist-awards h3{margin:1.25em 0 .45em;font:500 clamp(28px,3vw,42px)/1 var(--serif)}
 .gmr-artist-editorial .gmr-editorial ul,.gmr-artist-editorial .gmr-editorial ol,.gmr-artist-awards ul,.gmr-artist-awards ol{padding-left:1.25em}
 .gmr-artist-editorial .gmr-editorial blockquote,.gmr-artist-awards blockquote{margin:1.5em 0;padding-left:22px;border-left:2px solid var(--gmr-bronze);font:500 1.25em/1.45 var(--serif)}
+
+/* Editorial timeline generated from ordinary rich-text bullet lists. */
+.gmr-artist-chronology .gmr-timeline ul,.gmr-artist-chronology .gmr-timeline ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0;padding:0;border:0;list-style:none}
+.gmr-artist-chronology .gmr-timeline li{display:flex;min-height:190px;flex-direction:column;justify-content:space-between;gap:26px;padding:25px 27px;border:1px solid var(--gmr-line);border-radius:var(--gmr-radius);background:var(--gmr-paper)}
+.gmr-artist-chronology .gmr-timeline li strong{display:block;color:var(--gmr-bronze);font:500 clamp(34px,4vw,54px)/.9 var(--serif);letter-spacing:-.025em}
+.gmr-artist-chronology .gmr-timeline li span{display:block;max-width:34em;color:var(--gmr-ink);font-size:15px;line-height:1.55}
+.gmr-artist-awards-section{padding:clamp(62px,7vw,104px) 0;background:var(--gmr-paper)}
+.gmr-artist-awards-section .gmr-section__head{margin-bottom:clamp(30px,4vw,52px)}
+.gmr-artist-awards-section .gmr-artist-awards{max-width:none}
+.gmr-artist-awards-section .gmr-artist-awards ul,.gmr-artist-awards-section .gmr-artist-awards ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 54px;margin:0;padding:0;list-style:none}
+.gmr-artist-awards-section .gmr-artist-awards li{padding:20px 0;border-top:1px solid var(--gmr-line);font:500 clamp(19px,2vw,26px)/1.25 var(--serif)}
+@media(max-width:700px){.gmr-artist-chronology .gmr-timeline ul,.gmr-artist-chronology .gmr-timeline ol,.gmr-artist-awards-section .gmr-artist-awards ul,.gmr-artist-awards-section .gmr-artist-awards ol{grid-template-columns:1fr}.gmr-artist-chronology .gmr-timeline li{min-height:165px;padding:22px}.gmr-artist-awards-section .gmr-artist-awards li{padding:17px 0}}
