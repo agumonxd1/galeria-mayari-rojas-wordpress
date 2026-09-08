@@ -21,6 +21,7 @@ add_action( 'wp_enqueue_scripts', function() {
 	wp_enqueue_style( 'gmr-institution', get_template_directory_uri() . '/assets/institution.css', array( 'gmr-inquiry' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-institution-contrast', get_template_directory_uri() . '/assets/institution-contrast.css', array( 'gmr-institution' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'gmr-design-system', get_template_directory_uri() . '/assets/design-system.css', array( 'gmr-institution-contrast' ), wp_get_theme()->get( 'Version' ) );
+	if ( is_page('noticias') || is_home() || is_singular('post') ) wp_enqueue_style( 'gmr-news', get_template_directory_uri() . '/assets/news.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_front_page() ) wp_enqueue_style( 'gmr-home', get_template_directory_uri() . '/assets/home.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( get_query_var( 'gmr_artwork_room' ) ) wp_enqueue_style( 'gmr-artwork-room', get_template_directory_uri() . '/assets/artwork-room.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
 	if ( is_post_type_archive('product') || is_tax(array('product_cat','gmr_artist','gmr_collection')) || is_singular('product') || is_page('elmar-rojas') ) wp_enqueue_style( 'gmr-catalog', get_template_directory_uri() . '/assets/catalog.css', array( 'gmr-design-system' ), wp_get_theme()->get( 'Version' ) );
@@ -166,6 +167,6 @@ function gmr_theme_order_terms( array $terms, string $meta_key ): array {
 	return $terms;
 }
 function gmr_theme_menu_fallback(): void {
-	$items = array( 'La galeria' => gmr_theme_page_url( 'la-galeria' ), 'Elmar Rojas' => gmr_theme_page_url( 'elmar-rojas' ), 'Artistas' => gmr_theme_page_url( 'artistas' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Colecciones' => gmr_theme_page_url( 'colecciones' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ) );
+	$items = array( 'La galeria' => gmr_theme_page_url( 'la-galeria' ), 'Elmar Rojas' => gmr_theme_page_url( 'elmar-rojas' ), 'Artistas' => gmr_theme_page_url( 'artistas' ), 'Catalogo' => get_post_type_archive_link( 'product' ), 'Noticias' => gmr_theme_page_url( 'noticias' ), 'Agenda' => get_post_type_archive_link( 'gmr_event' ) );
 	echo '<ul>'; foreach ( $items as $label => $url ) printf( '<li><a href="%s">%s</a></li>', esc_url( $url ), esc_html( $label ) ); echo '</ul>';
 }
