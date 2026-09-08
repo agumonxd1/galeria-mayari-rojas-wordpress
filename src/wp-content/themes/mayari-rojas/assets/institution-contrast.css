@@ -1,0 +1,4 @@
+/* Contraste explícito para la portada institucional. */
+.gmr-institution-hero{background:var(--paper);color:var(--ink)}
+.gmr-institution-hero:after{border-color:rgba(154,113,69,.35)}
+.gmr-institution-hero h1,.gmr-institution-hero p{color:var(--ink)}
