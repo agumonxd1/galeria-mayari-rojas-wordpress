@@ -35,6 +35,13 @@ final class GMR_Core_Artwork_Room {
 			: home_url( '/sala/' . $post->post_name . '/' );
 	}
 
+	public static function has_content( int $post_id ): bool {
+		$video = trim( (string) get_post_meta( $post_id, 'gmr_room_video_url', true ) );
+		$text  = html_entity_decode( wp_strip_all_tags( (string) get_post_meta( $post_id, 'gmr_room_text', true ) ), ENT_QUOTES, get_bloginfo( 'charset' ) );
+		$text  = trim( preg_replace( '/\x{00A0}/u', ' ', $text ) ?? '' );
+		return '' !== $video || '' !== $text;
+	}
+
 	public static function add_box(): void {
 		add_meta_box( 'gmr-artwork-room', __( 'Experiencia pública en sala y código QR', 'mayari-core' ), array( self::class, 'box' ), 'product', 'normal', 'default' );
 	}
@@ -44,11 +51,12 @@ final class GMR_Core_Artwork_Room {
 		$url   = self::url( $post->ID );
 		$video = (string) get_post_meta( $post->ID, 'gmr_room_video_url', true );
 		$text  = (string) get_post_meta( $post->ID, 'gmr_room_text', true );
+		$active = self::has_content( $post->ID );
 		?>
 		<div class="gmr-room-admin">
 			<section class="gmr-room-admin__intro">
 				<div><span class="gmr-room-admin__eyebrow"><?php esc_html_e( 'Recorrido de galería', 'mayari-core' ); ?></span><h3><?php esc_html_e( 'Contenido que descubrirá el visitante', 'mayari-core' ); ?></h3><p><?php esc_html_e( 'Esta página es siempre pública y está pensada para abrirse al escanear el código colocado junto a la obra. Admite video, texto o ambos.', 'mayari-core' ); ?></p></div>
-				<div class="gmr-room-admin__qr"><div data-gmr-qr="<?php echo esc_attr( $url ); ?>"></div><strong><?php esc_html_e( 'QR de la obra', 'mayari-core' ); ?></strong><div class="gmr-room-admin__actions"><button type="button" class="button" data-gmr-qr-download><?php esc_html_e( 'Descargar PNG', 'mayari-core' ); ?></button><button type="button" class="button" data-gmr-copy="<?php echo esc_attr( $url ); ?>"><?php esc_html_e( 'Copiar enlace', 'mayari-core' ); ?></button><a class="button" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Abrir página', 'mayari-core' ); ?></a></div></div>
+				<div class="gmr-room-admin__qr<?php echo $active ? '' : ' is-inactive'; ?>"><?php if ( $active ) : ?><div data-gmr-qr="<?php echo esc_attr( $url ); ?>" data-gmr-qr-size="512"></div><strong><?php esc_html_e( 'QR de la obra', 'mayari-core' ); ?></strong><div class="gmr-room-admin__actions"><button type="button" class="button" data-gmr-qr-download><?php esc_html_e( 'Descargar PNG de alta resolución', 'mayari-core' ); ?></button><button type="button" class="button" data-gmr-copy="<?php echo esc_attr( $url ); ?>"><?php esc_html_e( 'Copiar enlace', 'mayari-core' ); ?></button><a class="button" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Abrir página', 'mayari-core' ); ?></a></div><?php else : ?><strong><?php esc_html_e( 'QR pendiente de contenido', 'mayari-core' ); ?></strong><p><?php esc_html_e( 'Añada un video o texto y guarde la obra para activar su página y código QR.', 'mayari-core' ); ?></p><?php endif; ?></div>
 			</section>
 			<section class="gmr-room-admin__fields"><label class="gmr-field"><span><?php esc_html_e( 'Video de YouTube', 'mayari-core' ); ?></span><input type="url" name="gmr_room_video_url" value="<?php echo esc_attr( $video ); ?>" placeholder="https://www.youtube.com/watch?v=..."><small><?php esc_html_e( 'Puede dejarse vacío. Se mostrará en formato adaptable para computadoras y teléfonos.', 'mayari-core' ); ?></small></label><div class="gmr-room-admin__editor"><strong><?php esc_html_e( 'Texto curatorial o testimonio', 'mayari-core' ); ?></strong><?php wp_editor( $text, 'gmr_room_text', array( 'textarea_name'=>'gmr_room_text', 'textarea_rows'=>9, 'media_buttons'=>false, 'teeny'=>false ) ); ?></div></section>
 		</div>
