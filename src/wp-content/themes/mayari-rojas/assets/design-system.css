@@ -1,4 +1,7 @@
 /* Mayari visual system 1.0 - approved editorial direction */
+.gmr-footer .gmr-social-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.gmr-footer .gmr-social-links a{display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(255,255,255,.35);border-radius:50%;color:#fff;transition:background .2s,color .2s}
+.gmr-footer .gmr-social-links a:hover,.gmr-footer .gmr-social-links a:focus-visible{background:var(--gmr-paper);color:var(--gmr-ink);outline:2px solid var(--gmr-bronze);outline-offset:3px}
 :root{
  --gmr-ink:#141310;--gmr-charcoal:#1b1916;--gmr-paper:#f3efe7;--gmr-canvas:#faf8f3;--gmr-white:#fff;--gmr-stone:#d9d2c6;--gmr-muted:#716b62;--gmr-bronze:#a67b4f;--gmr-line:rgba(20,19,16,.16);--gmr-line-light:rgba(255,255,255,.2);
  --ink:var(--gmr-ink);--paper:var(--gmr-paper);--white:var(--gmr-white);--muted:var(--gmr-muted);--line:var(--gmr-line);--accent:var(--gmr-bronze);

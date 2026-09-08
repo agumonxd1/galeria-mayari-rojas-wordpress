@@ -94,6 +94,7 @@ final class GMR_Core_Meta {
 	}
 
 	private static function register_editorial_meta(): void {
+		register_post_meta( 'gmr_event', 'gmr_event_featured', array( 'type' => 'boolean', 'single' => true, 'show_in_rest' => false, 'sanitize_callback' => 'rest_sanitize_boolean', 'auth_callback' => static fn() => current_user_can( 'edit_posts' ) ) );
 		$event_fields = array(
 			'gmr_event_start'        => 'sanitize_text_field',
 			'gmr_event_end'          => 'sanitize_text_field',

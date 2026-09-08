@@ -25,6 +25,7 @@ final class GMR_Core_Admin_Editorial {
 	public static function event_box( WP_Post $post ): void {
 		wp_nonce_field( 'gmr_editorial_save', 'gmr_editorial_nonce' );
 		self::field( $post, 'gmr_event_start', 'Inicio', 'datetime-local' );
+		printf( '<p><label><input type="checkbox" name="gmr_event_featured" value="1" %s> Evento destacado en la página principal</label></p><p class="description">Aparece primero en Agenda cultural con el distintivo Destacado. Conserva su visibilidad pública o para coleccionistas.</p>', checked( get_post_meta( $post->ID, 'gmr_event_featured', true ), true, false ) );
 		self::field( $post, 'gmr_event_end', 'Final', 'datetime-local' );
 		printf( '<p><label><input type="checkbox" name="gmr_event_all_day" value="1" %s> Evento de dia completo</label></p>', checked( get_post_meta( $post->ID, 'gmr_event_all_day', true ), true, false ) );
 		self::field( $post, 'gmr_event_venue', 'Lugar' );
@@ -69,10 +70,16 @@ final class GMR_Core_Admin_Editorial {
 		echo '</select></p>';
 	}
 
-	public static function save_event( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_event_start', 'gmr_event_end', 'gmr_event_venue', 'gmr_event_address', 'gmr_event_modality', 'gmr_event_status', 'gmr_event_registration', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_event_all_day', isset( $_POST['gmr_event_all_day'] ) ); }
+	public static function save_event( int $post_id ): void {
+		if ( self::save( $post_id, array( 'gmr_event_start', 'gmr_event_end', 'gmr_event_venue', 'gmr_event_address', 'gmr_event_modality', 'gmr_event_status', 'gmr_event_registration', 'gmr_visibility' ) ) ) {
+			update_post_meta( $post_id, 'gmr_event_all_day', isset( $_POST['gmr_event_all_day'] ) );
+			update_post_meta( $post_id, 'gmr_event_featured', isset( $_POST['gmr_event_featured'] ) );
+		}
+	}
 	public static function save_media( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_media_date_label', 'gmr_media_credits', 'gmr_media_ids', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_media_events', implode( ',', array_filter( array_map( 'absint', (array) ( $_POST['gmr_media_events'] ?? array() ) ) ) ) ); }
 	public static function save_tribute( int $post_id ): void { if ( self::save( $post_id, array( 'gmr_tribute_author', 'gmr_tribute_role', 'gmr_tribute_source', 'gmr_tribute_date', 'gmr_visibility' ) ) ) update_post_meta( $post_id, 'gmr_tribute_featured', isset( $_POST['gmr_tribute_featured'] ) ); }
 	private static function save( int $post_id, array $keys ): bool {
+		if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) return false;
 		if ( ! isset( $_POST['gmr_editorial_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['gmr_editorial_nonce'] ) ), 'gmr_editorial_save' ) || ! current_user_can( 'edit_post', $post_id ) ) return false;
 		foreach ( $keys as $key ) if ( isset( $_POST[ $key ] ) ) update_post_meta( $post_id, $key, wp_unslash( $_POST[ $key ] ) );
 		return true;

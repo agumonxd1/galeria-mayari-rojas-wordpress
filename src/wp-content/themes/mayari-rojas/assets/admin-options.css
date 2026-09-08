@@ -1,4 +1,5 @@
 /* Structured layout for Appearance > Mayari Options. */
+.gmr-options__grid>.gmr-options__card--landing,.gmr-options__grid>.gmr-options__card--social{grid-column:1/-1}
 .gmr-options__grid > .gmr-options__card { position: relative; }
 
 .gmr-options__grid > .gmr-options__card:nth-of-type(1),
