@@ -32,6 +32,9 @@ final class GMR_Core_Admin_Terms {
 			return;
 		}
 		wp_enqueue_media();
+		if ( 'gmr_artist' === $taxonomy ) {
+			wp_enqueue_editor();
+		}
 		wp_enqueue_style( 'gmr-admin-terms', plugins_url( 'assets/admin-terms.css', GMR_CORE_FILE ), array(), GMR_CORE_VERSION );
 		wp_enqueue_script( 'gmr-admin-terms', plugins_url( 'assets/admin-terms.js', GMR_CORE_FILE ), array( 'jquery' ), GMR_CORE_VERSION, true );
 	}
@@ -57,10 +60,10 @@ final class GMR_Core_Admin_Terms {
 	private static function artist_fields( ?WP_Term $term, bool $table ): void {
 		self::media_field( 'gmr_artist_portrait_id', 'Retrato', $term, $table, 'Imagen vertical para ficha y listados.' );
 		self::media_field( 'gmr_artist_cover_id', 'Portada', $term, $table, 'Imagen panoramica para la cabecera del perfil.' );
-		self::editor_field( 'gmr_artist_biography', 'Biografia', $term, $table );
-		self::editor_field( 'gmr_artist_history', 'Historia y trayectoria', $term, $table );
-		self::editor_field( 'gmr_artist_chronology', 'Cronologia', $term, $table );
-		self::editor_field( 'gmr_artist_awards', 'Premios y reconocimientos', $term, $table );
+		self::rich_editor_field( 'gmr_artist_biography', 'Biografía', $term, $table );
+		self::rich_editor_field( 'gmr_artist_history', 'Historia y trayectoria', $term, $table );
+		self::rich_editor_field( 'gmr_artist_chronology', 'Cronología', $term, $table );
+		self::rich_editor_field( 'gmr_artist_awards', 'Premios y reconocimientos', $term, $table );
 		self::multi_media_field( 'gmr_artist_media_ids', 'Archivo fotografico', $term, $table, 'Seleccione y ordene fotografias editoriales.' );
 		self::multi_media_field( 'gmr_artist_document_ids', 'Documentos y publicaciones', $term, $table, 'Seleccione documentos PDF o imagenes de publicaciones.' );
 		self::select_field( 'gmr_artist_special_template', 'Presentacion especial', $term, $table, array( '' => 'Estandar', 'elmar' => 'Elmar Rojas' ) );
@@ -103,6 +106,23 @@ final class GMR_Core_Admin_Terms {
 	private static function editor_field( string $key, string $label, ?WP_Term $term, bool $table ): void {
 		$control = sprintf( '<textarea id="%1$s" name="%1$s" rows="8">%2$s</textarea>', esc_attr( $key ), esc_textarea( self::field_value( $term, $key ) ) );
 		self::wrap( $key, $label, $control, $table, 'Admite texto enriquecido basico.' );
+	}
+
+	private static function rich_editor_field( string $key, string $label, ?WP_Term $term, bool $table ): void {
+		ob_start();
+		wp_editor(
+			(string) self::field_value( $term, $key ),
+			$key,
+			array(
+				'textarea_name' => $key,
+				'textarea_rows' => 10,
+				'media_buttons' => false,
+				'teeny'         => false,
+				'quicktags'     => true,
+			)
+		);
+		$control = (string) ob_get_clean();
+		self::wrap( $key, $label, $control, $table, 'Permite párrafos, encabezados, listas, enlaces, negritas, cursivas y citas.' );
 	}
 
 	private static function checkbox_field( string $key, string $label, ?WP_Term $term, bool $table ): void {
@@ -158,9 +178,11 @@ final class GMR_Core_Admin_Terms {
 		$fields = 'gmr_artist' === $term->taxonomy
 			? array( 'gmr_artist_biography', 'gmr_artist_history', 'gmr_artist_chronology', 'gmr_artist_awards', 'gmr_artist_media_ids', 'gmr_artist_document_ids', 'gmr_artist_portrait_id', 'gmr_artist_cover_id', 'gmr_artist_featured', 'gmr_artist_special_template', 'gmr_artist_order' )
 			: array( 'gmr_collection_subtitle', 'gmr_collection_year_start', 'gmr_collection_year_end', 'gmr_collection_text', 'gmr_collection_cover_id', 'gmr_collection_artists', 'gmr_visibility', 'gmr_collection_order' );
+		$rich_fields = array( 'gmr_artist_biography', 'gmr_artist_history', 'gmr_artist_chronology', 'gmr_artist_awards' );
 		foreach ( $fields as $key ) {
 			$value = $_POST[ $key ] ?? ( 'gmr_artist_featured' === $key ? false : ( 'gmr_collection_artists' === $key ? array() : '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			update_term_meta( $term_id, $key, wp_unslash( $value ) );
+			$value = in_array( $key, $rich_fields, true ) ? wp_kses_post( wp_unslash( $value ) ) : wp_unslash( $value );
+			update_term_meta( $term_id, $key, $value );
 		}
 	}
 

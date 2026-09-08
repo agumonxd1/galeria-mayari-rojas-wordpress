@@ -15,3 +15,13 @@
 #archivo .gmr-document-grid{grid-template-columns:1fr;margin-top:28px}#archivo .gmr-document{min-height:0;display:grid;grid-template-columns:1fr 2fr auto;gap:25px;align-items:center;padding:22px 26px;border-radius:var(--gmr-radius);background:var(--gmr-charcoal);color:#fff}#archivo .gmr-document strong{font-size:clamp(23px,2.5vw,34px)}#archivo .gmr-document small{justify-self:end;padding:10px 14px;border:1px solid rgba(255,255,255,.4);border-radius:999px}
 @media(min-width:1200px){#obra-elmar .gmr-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:64px 20px}#obra-elmar .gmr-card h2{font-size:clamp(23px,2vw,31px)}}
 @media(max-width:700px){#archivo .gmr-document{grid-template-columns:1fr}#archivo .gmr-document small{justify-self:start}#voces .gmr-voice-card{min-height:290px}}
+
+/* Compact enriched biography, trajectory, chronology and recognitions. */
+#biografia,#biografia+.gmr-section,#cronologia,#archivo{padding:clamp(62px,7vw,104px) 0}
+#biografia .gmr-elmar-text,#biografia+.gmr-section .gmr-elmar-text{gap:clamp(36px,6vw,86px)}
+#biografia .gmr-editorial,#biografia+.gmr-section .gmr-editorial,#archivo>.gmr-wrap>.gmr-editorial{line-height:1.72}
+#biografia .gmr-editorial>*:first-child,#biografia+.gmr-section .gmr-editorial>*:first-child,#archivo>.gmr-wrap>.gmr-editorial>*:first-child{margin-top:0}
+#biografia .gmr-editorial>*:last-child,#biografia+.gmr-section .gmr-editorial>*:last-child,#archivo>.gmr-wrap>.gmr-editorial>*:last-child{margin-bottom:0}
+#cronologia .gmr-section__head,#archivo>.gmr-wrap>.gmr-section__head{margin-bottom:clamp(30px,4vw,52px)}
+#biografia .gmr-editorial h2,#biografia .gmr-editorial h3,#biografia+.gmr-section .gmr-editorial h2,#biografia+.gmr-section .gmr-editorial h3,#archivo>.gmr-wrap>.gmr-editorial h2,#archivo>.gmr-wrap>.gmr-editorial h3{margin:1.25em 0 .45em;font-size:clamp(28px,3vw,42px);line-height:1}
+#biografia .gmr-editorial blockquote,#biografia+.gmr-section .gmr-editorial blockquote,#archivo>.gmr-wrap>.gmr-editorial blockquote{margin:1.5em 0;padding-left:22px;border-left:2px solid var(--gmr-bronze);font:500 1.25em/1.45 var(--serif)}
