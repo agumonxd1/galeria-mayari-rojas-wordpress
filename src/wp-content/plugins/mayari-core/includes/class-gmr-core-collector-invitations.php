@@ -3,7 +3,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class GMR_Core_Collector_Invitations {
-	private const VERSION = '1.0.0';
+	private const VERSION = '1.1.0';
 	private const QUERY_VAR = 'gmr_collector_invitation';
 	private const CAPABILITY = 'gmr_manage_collectors';
 
@@ -17,6 +17,7 @@ final class GMR_Core_Collector_Invitations {
 		add_action( 'admin_post_gmr_create_collector_invitation', array( self::class, 'create_invitation' ) );
 		add_action( 'admin_post_gmr_revoke_collector_invitation', array( self::class, 'revoke_invitation' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'admin_assets' ) );
+		add_action( 'wp_login', array( self::class, 'record_login' ), 20, 2 );
 	}
 
 	public static function activate(): void {
@@ -34,6 +35,8 @@ final class GMR_Core_Collector_Invitations {
 			revoked_at datetime NULL DEFAULT NULL,
 			used_at datetime NULL DEFAULT NULL,
 			used_by bigint(20) unsigned NOT NULL DEFAULT 0,
+			login_count bigint(20) unsigned NOT NULL DEFAULT 0,
+			last_login_at datetime NULL DEFAULT NULL,
 			PRIMARY KEY  (id),
 			UNIQUE KEY token_hash (token_hash),
 			KEY invitation_status (expires_at, revoked_at, used_at),
@@ -104,7 +107,7 @@ final class GMR_Core_Collector_Invitations {
 		}
 		update_user_meta( $user_id, 'gmr_collector_status', 'active' );
 		update_user_meta( $user_id, 'gmr_collector_invitation_id', (int) $invite->id );
-		$wpdb->update( self::table(), array( 'used_by' => $user_id ), array( 'id' => (int) $invite->id ), array( '%d' ), array( '%d' ) );
+		$wpdb->update( self::table(), array( 'used_by' => $user_id, 'login_count' => 1, 'last_login_at' => current_time( 'mysql', true ) ), array( 'id' => (int) $invite->id ), array( '%d', '%d', '%s' ), array( '%d' ) );
 		wp_set_current_user( $user_id ); wp_set_auth_cookie( $user_id, true );
 		wp_safe_redirect( add_query_arg( 'welcome', 'invitation', self::collector_url() ) ); exit;
 	}
@@ -117,6 +120,12 @@ final class GMR_Core_Collector_Invitations {
 	}
 	private static function collector_url(): string { $page = get_page_by_path( 'coleccionistas' ); return $page ? get_permalink( $page ) : home_url( '/coleccionistas/' ); }
 	private static function can_manage(): bool { return current_user_can( self::CAPABILITY ) || current_user_can( 'gmr_manage_artworks' ) || current_user_can( 'create_users' ); }
+	public static function record_login( string $login, WP_User $user ): void {
+		$invitation_id = absint( get_user_meta( $user->ID, 'gmr_collector_invitation_id', true ) );
+		if ( ! $invitation_id ) return;
+		global $wpdb;
+		$wpdb->query( $wpdb->prepare( 'UPDATE ' . self::table() . ' SET login_count = login_count + 1, last_login_at = UTC_TIMESTAMP() WHERE id = %d AND used_by = %d', $invitation_id, $user->ID ) );
+	}
 
 	public static function render(): void {
 		if ( ! get_query_var( self::QUERY_VAR ) ) return;
@@ -165,7 +174,7 @@ final class GMR_Core_Collector_Invitations {
 			<header class="gmr-invitations__hero"><div><span>COLECCIONISTAS · ACCESO PRIVADO</span><h1><?php esc_html_e( 'Invitaciones de registro', 'mayari-core' ); ?></h1><p><?php esc_html_e( 'Cree accesos personales, con vencimiento y de un único uso. El registro público permanece cerrado.', 'mayari-core' ); ?></p></div><div class="gmr-invitations__hero-note"><strong><?php esc_html_e( 'Enlace seguro', 'mayari-core' ); ?></strong><p><?php esc_html_e( 'El enlace completo se muestra una vez al crearlo. Guárdelo o envíelo de inmediato; si se pierde, revóquelo y genere otro.', 'mayari-core' ); ?></p></div></header>
 			<?php if ( $created ) : ?><section class="gmr-invitations__created"><span><?php esc_html_e( 'INVITACIÓN CREADA', 'mayari-core' ); ?></span><h2><?php esc_html_e( 'Lista para compartir', 'mayari-core' ); ?></h2><div><code><?php echo esc_html( $created['url'] ); ?></code><button class="button button-primary" type="button" data-gmr-copy="<?php echo esc_attr( $created['url'] ); ?>"><?php esc_html_e( 'Copiar enlace', 'mayari-core' ); ?></button></div></section><?php elseif ( isset( $_GET['revoked'] ) ) : ?><div class="notice notice-success"><p><?php esc_html_e( 'La invitación fue revocada.', 'mayari-core' ); ?></p></div><?php endif; ?>
 			<div class="gmr-invitations__layout"><section class="gmr-invitations__create"><span>01 · NUEVA INVITACIÓN</span><h2><?php esc_html_e( 'Preparar un acceso', 'mayari-core' ); ?></h2><form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="gmr_create_collector_invitation"><?php wp_nonce_field( 'gmr_create_collector_invitation' ); ?><label>Nombre <input name="invitee_name" type="text" placeholder="Opcional"></label><label>Correo electrónico <input name="invitee_email" type="email" placeholder="Opcional; se podrá escribir al registrarse"></label><label>Vence en <select name="expires_in_days"><option value="1">1 día</option><option value="3">3 días</option><option value="7" selected>7 días</option><option value="14">14 días</option><option value="30">30 días</option><option value="90">90 días</option><option value="365">1 año</option></select></label><button class="button button-primary" type="submit">Crear invitación <span>↗</span></button></form></section>
-			<section class="gmr-invitations__history"><div class="gmr-invitations__section-head"><div><span>02 · SEGUIMIENTO</span><h2><?php esc_html_e( 'Invitaciones recientes', 'mayari-core' ); ?></h2></div><p><?php esc_html_e( 'Se conserva el registro de la invitación, incluso si vence o es revocada.', 'mayari-core' ); ?></p></div><div class="gmr-invitations__table-wrap"><table><thead><tr><th>Destinatario</th><th>Creada</th><th>Vence</th><th>Estado</th><th>Registro</th><th></th></tr></thead><tbody><?php if ( ! $invites ) : ?><tr><td colspan="6" class="gmr-invitations__empty">Aún no hay invitaciones.</td></tr><?php endif; foreach ( $invites as $invite ) : $state = self::state( $invite ); $user = $invite->used_by ? get_userdata( (int) $invite->used_by ) : null; ?><tr><td><strong><?php echo esc_html( $invite->invitee_name ?: 'Sin nombre asignado' ); ?></strong><small><?php echo esc_html( $invite->invitee_email ?: 'Correo libre' ); ?></small></td><td><?php echo esc_html( get_date_from_gmt( $invite->created_at, 'j M Y' ) ); ?></td><td><?php echo esc_html( get_date_from_gmt( $invite->expires_at, 'j M Y · H:i' ) ); ?></td><td><span class="gmr-invitation-status is-<?php echo esc_attr( $state ); ?>"><?php echo esc_html( array( 'active'=>'Pendiente', 'used'=>'Registrada', 'expired'=>'Vencida', 'revoked'=>'Revocada' )[ $state ] ); ?></span></td><td><?php if ( $user ) : ?><strong><?php echo esc_html( $user->display_name ); ?></strong><small><?php echo esc_html( $user->user_email ); ?></small><?php else : ?>—<?php endif; ?></td><td><?php if ( 'active' === $state ) : ?><form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="gmr_revoke_collector_invitation"><input type="hidden" name="invitation_id" value="<?php echo esc_attr( $invite->id ); ?>"><?php wp_nonce_field( 'gmr_revoke_collector_invitation_' . $invite->id ); ?><button class="button-link-delete" type="submit">Revocar</button></form><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div></section></div>
+			<section class="gmr-invitations__history"><div class="gmr-invitations__section-head"><div><span>02 · SEGUIMIENTO</span><h2><?php esc_html_e( 'Invitaciones recientes', 'mayari-core' ); ?></h2></div><p><?php esc_html_e( 'Se conserva el registro de la invitación, incluso si vence o es revocada.', 'mayari-core' ); ?></p></div><div class="gmr-invitations__table-wrap"><table><thead><tr><th>Destinatario</th><th>Creada</th><th>Vence</th><th>Estado</th><th>Uso y actividad</th><th></th></tr></thead><tbody><?php if ( ! $invites ) : ?><tr><td colspan="6" class="gmr-invitations__empty">Aún no hay invitaciones.</td></tr><?php endif; foreach ( $invites as $invite ) : $state = self::state( $invite ); $user = $invite->used_by ? get_userdata( (int) $invite->used_by ) : null; ?><tr><td><strong><?php echo esc_html( $invite->invitee_name ?: 'Sin nombre asignado' ); ?></strong><small><?php echo esc_html( $invite->invitee_email ?: 'Correo libre' ); ?></small></td><td><?php echo esc_html( get_date_from_gmt( $invite->created_at, 'j M Y' ) ); ?></td><td><?php echo esc_html( get_date_from_gmt( $invite->expires_at, 'j M Y · H:i' ) ); ?></td><td><span class="gmr-invitation-status is-<?php echo esc_attr( $state ); ?>"><?php echo esc_html( array( 'active'=>'Pendiente', 'used'=>'Registrada', 'expired'=>'Vencida', 'revoked'=>'Revocada' )[ $state ] ); ?></span></td><td><?php if ( $user ) : ?><strong><?php echo esc_html( $user->display_name ); ?></strong><small><?php echo esc_html( 'Registro: ' . get_date_from_gmt( $invite->used_at, 'j M Y · H:i' ) ); ?></small><small><?php echo esc_html( (int) $invite->login_count . ' ingreso' . ( 1 === (int) $invite->login_count ? '' : 's' ) . ( $invite->last_login_at ? ' · último: ' . get_date_from_gmt( $invite->last_login_at, 'j M Y · H:i' ) : '' ) ); ?></small><?php else : ?>—<?php endif; ?></td><td><?php if ( 'active' === $state ) : ?><form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="gmr_revoke_collector_invitation"><input type="hidden" name="invitation_id" value="<?php echo esc_attr( $invite->id ); ?>"><?php wp_nonce_field( 'gmr_revoke_collector_invitation_' . $invite->id ); ?><button class="button-link-delete" type="submit">Revocar</button></form><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div></section></div>
 		</div><?php
 	}
 }

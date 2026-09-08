@@ -52,6 +52,7 @@ add_action( 'wp_enqueue_scripts', function() {
 
 add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
 add_filter( 'woocommerce_show_page_title', '__return_false' );
+add_filter( 'document_title_parts', function( array $parts ): array { if ( get_query_var( 'gmr_collector_invitation' ) ) $parts['title'] = 'Invitación de Coleccionista'; return $parts; }, 99 );
 add_filter( 'template_include', function( string $template ): string {
 	if ( is_front_page() ) {
 		$front = get_theme_file_path( 'front-page.php' );
