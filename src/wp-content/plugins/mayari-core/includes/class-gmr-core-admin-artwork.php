@@ -206,14 +206,35 @@ final class GMR_Core_Admin_Artwork {
 		}
 
 		foreach ( $boolean_fields as $key ) {
-			update_post_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '0' );
+			self::update_meta( $post_id, $key, isset( $_POST[ $key ] ) ? '1' : '0' );
 		}
 
 		foreach ( $enum_fields as $key => $allowed ) {
 			$value = isset( $_POST[ $key ] ) ? sanitize_key( wp_unslash( $_POST[ $key ] ) ) : '';
 			if ( in_array( $value, $allowed, true ) ) {
-				update_post_meta( $post_id, $key, $value );
+				self::update_meta( $post_id, $key, $value );
 			}
+		}
+	}
+
+	/**
+	 * Saves custom artwork metadata without re-entering WooCommerce's own
+	 * pre-update compatibility filter. On this staging stack that filter can
+	 * recurse indefinitely while a product is being saved.
+	 */
+	private static function update_meta( int $post_id, string $key, string $value ): void {
+		$woocommerce_callback = array( 'WC_Post_Data', 'update_post_metadata' );
+		$woocommerce_filter   = class_exists( 'WC_Post_Data' ) && false !== has_filter( 'update_post_metadata', $woocommerce_callback );
+
+		if ( $woocommerce_filter ) {
+			remove_filter( 'update_post_metadata', $woocommerce_callback, 10 );
+		}
+
+		update_post_meta( $post_id, $key, $value );
+
+		if ( $woocommerce_filter ) {
+			add_filter( 'update_post_metadata', $woocommerce_callback, 10, 5 );
+			wp_cache_delete( 'product-' . $post_id, 'products' );
 		}
 	}
 
@@ -221,7 +242,7 @@ final class GMR_Core_Admin_Artwork {
 		if ( '' === $value ) {
 			delete_post_meta( $post_id, $key );
 		} else {
-			update_post_meta( $post_id, $key, $value );
+			self::update_meta( $post_id, $key, $value );
 		}
 	}
 
